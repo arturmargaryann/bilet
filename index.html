@@ -1723,6 +1723,7 @@ async function scanTicket(rawInput) {
         <div style="font-family:'Noto Serif Armenian',serif;font-size:18px;font-weight:700;color:var(--accent2);margin-bottom:8px">ԱՆՎԱՎԵՐ ՏՈՄՍ</div>
         <div style="font-size:12px;color:var(--text-dim)">Այս կոդով տոմս չի գտնվել համակարգում</div>
         <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-family:monospace">${raw}</div>
+      <button onclick="dismissResult()" style="margin-top:14px;width:100%;background:var(--accent2);border:none;color:#fff;padding:12px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">✕ Փаkел — nor scan</button>
       </div>`;
     scannedLog.unshift({ status: 'invalid', code: raw, time: timeStr });
     document.getElementById('scanInput').value = '';
@@ -1766,11 +1767,19 @@ async function scanTicket(rawInput) {
         <div style="color:var(--text-mid);font-size:12px">👤 ${ticket.buyer}</div>
         <div style="color:var(--accent);font-size:12px;margin-top:6px">🪑 ${ticket.seats.join(', ')}</div>
       </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--success)">✓ Տոմսը նշված է որպես օգտագործված</div>
+      <div style="margin-top:12px;font-size:11px;color:var(--success)">✓ Տոմsы nshvats e vorpes ogtagortsvats</div>
+      <button onclick="dismissResult()" style="margin-top:14px;width:100%;background:var(--success);border:none;color:#000;padding:12px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">✓ Հajord — nor scan</button>
     </div>`;
+  if (scanLoop) { clearInterval(scanLoop); scanLoop = null; }
   scannedLog.unshift({ status: 'valid', code: raw, ticket, time: timeStr });
   document.getElementById('scanInput').value = '';
   renderScannedLog();
+}
+
+function dismissResult() {
+  document.getElementById('scanResult').style.display = 'none';
+  // Restart scan loop if camera is still on
+  if (cameraStream && !scanLoop) startScanLoop();
 }
 
 function renderScannedLog() {
