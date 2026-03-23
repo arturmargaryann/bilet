@@ -1460,27 +1460,27 @@
 
         <!-- CAMERA SCANNER -->
         <div class="form-section">
-          <div class="form-section-title">📷 Կամերայով Ստուգել</div>
+          <div class="form-section-title">📷 Կամerayov Ступел</div>
+          <div id="cameraStart">
+            <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">Սеղмиr кнопкан — ծрагиры автomат карда QR-ы</p>
+            <button class="add-cart-btn" onclick="startCamera()">📷 Կամerան Мiatsnel</button>
+          </div>
           <div id="cameraArea" style="display:none">
-            <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;margin-bottom:16px">
-              <video id="qrVideo" style="width:100%;display:block;border-radius:12px" playsinline></video>
+            <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;margin-bottom:12px">
+              <video id="qrVideo" style="width:100%;display:block;border-radius:12px;max-height:300px;object-fit:cover" playsinline autoplay muted></video>
               <canvas id="qrCanvas" style="display:none"></canvas>
-              <!-- Scanner overlay -->
               <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
-                <div style="width:200px;height:200px;position:relative">
-                  <div style="position:absolute;top:0;left:0;width:28px;height:28px;border-top:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:4px 0 0 0"></div>
-                  <div style="position:absolute;top:0;right:0;width:28px;height:28px;border-top:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 4px 0 0"></div>
-                  <div style="position:absolute;bottom:0;left:0;width:28px;height:28px;border-bottom:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:0 0 0 4px"></div>
-                  <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-bottom:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 0 4px 0"></div>
-                  <div id="scanLine" style="position:absolute;left:4px;right:4px;height:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:scanAnim 2s linear infinite;top:0"></div>
+                <div style="width:180px;height:180px;position:relative">
+                  <div style="position:absolute;top:0;left:0;width:28px;height:28px;border-top:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:3px 0 0 0"></div>
+                  <div style="position:absolute;top:0;right:0;width:28px;height:28px;border-top:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 3px 0 0"></div>
+                  <div style="position:absolute;bottom:0;left:0;width:28px;height:28px;border-bottom:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:0 0 0 3px"></div>
+                  <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-bottom:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 0 3px 0"></div>
+                  <div style="position:absolute;left:4px;right:4px;height:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:scanAnim 2s linear infinite"></div>
                 </div>
               </div>
             </div>
-            <button class="remove-btn" onclick="stopCamera()" style="width:100%;margin-bottom:0;padding:10px;text-align:center">■ Կամերան Անջատել</button>
-          </div>
-          <div id="cameraStart">
-            <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">Սկսեք կամերան QR կոդը ուղղակի սկաններ անելու համար:</p>
-            <button class="add-cart-btn" onclick="startCamera()">📷 Կամերան Միացնել</button>
+            <div id="scanStatus" style="font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:12px">🔍 Pos QR-ы frame-ի мej...</div>
+            <button class="remove-btn" onclick="stopCamera()" style="width:100%;padding:10px;text-align:center">■ Կамerան Anjaтel</button>
           </div>
           <div id="cameraError" style="display:none;color:var(--accent2);font-size:13px;margin-top:12px;padding:12px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:8px"></div>
         </div>
@@ -2516,7 +2516,7 @@ updateMyTicketsBadge();
 // Preload JSONBin cache on startup
 dbRead().then(() => console.log('JSONBin cache loaded'));
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+<script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 // =====================
 // QR CAMERA SCANNER
@@ -2531,24 +2531,24 @@ async function startCamera() {
   errEl.style.display = 'none';
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
     });
     cameraStream = stream;
     const video = document.getElementById('qrVideo');
     video.srcObject = stream;
-    video.play();
+    await video.play();
     document.getElementById('cameraArea').style.display = 'block';
     document.getElementById('cameraStart').style.display = 'none';
     startScanLoop();
   } catch(e) {
     errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Կամերային հասանելիություն չկա: ' + (e.message || 'Խնդրում ենք թույլ տալ կամերայի օգտագործումը:');
+    errEl.textContent = '⚠️ Կամerayan hasanelutyun chka: ' + (e.message || 'Xndrum enq tuylatrel kamerayi ogtagortsumы');
   }
 }
 
 function stopCamera() {
   if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
-  clearInterval(scanLoop); scanLoop = null;
+  if (scanLoop) { clearInterval(scanLoop); scanLoop = null; }
   document.getElementById('cameraArea').style.display = 'none';
   document.getElementById('cameraStart').style.display = 'block';
 }
@@ -2556,31 +2556,38 @@ function stopCamera() {
 function startScanLoop() {
   const video = document.getElementById('qrVideo');
   const canvas = document.getElementById('qrCanvas');
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const statusEl = document.getElementById('scanStatus');
   let lastScanned = '', lastTime = 0;
+
   scanLoop = setInterval(() => {
-    if (video.readyState < 2) return;
+    if (!video || video.readyState < 2 || video.paused) return;
     const w = video.videoWidth;
     const h = video.videoHeight;
     if (!w || !h) return;
+
     canvas.width = w;
     canvas.height = h;
     ctx.drawImage(video, 0, 0, w, h);
-    const imgData = ctx.getImageData(0, 0, w, h);
+
     if (typeof jsQR === 'undefined') return;
-    const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const code = jsQR(imgData.data, w, h, { inversionAttempts: 'attemptBoth' });
+
     if (code && code.data) {
       const now = Date.now();
       if (code.data !== lastScanned || now - lastTime > 3000) {
         lastScanned = code.data;
         lastTime = now;
+        if (statusEl) statusEl.textContent = '✅ QR hайтniapvets! Ступum em...';
         scanTicket(code.data);
       }
+    } else {
+      if (statusEl) statusEl.textContent = '🔍 Pos QR-ы frame-ի мej...';
     }
-  }, 300);
+  }, 200);
 }
-
-// Camera uses main scanTicket(raw) above
 
 function renderScannedList() {
   const el = document.getElementById('scannedList');
