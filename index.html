@@ -1546,7 +1546,7 @@
 <footer>© 2025 ԲԻԼԵԹ — Տոմսերի Առցանց Վաճառք · Երևան, Հայաստան</footer>
 
 <script>
-const events = [
+let events = [
   {
     id: 1, name: "Aram Asatryan — Հոբելյանական Համերգ",
     category: "Համերգ", emoji: "🎤",
@@ -2382,6 +2382,22 @@ function deleteMyTicket(index) {
 // =====================
 const COLORS = ['#e8c547','#6bc5ff','#ff6b6b','#c084fc','#fb923c','#4ade80','#f472b6','#38bdf8'];
 
+const LS_EVENTS = 'bilet_events';
+
+function saveEvents() {
+  try { localStorage.setItem(LS_EVENTS, JSON.stringify(events)); } catch(e) {}
+}
+
+function loadSavedEvents() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_EVENTS));
+    if (saved && saved.length > 0) {
+      events.length = 0;
+      saved.forEach(e => events.push(e));
+    }
+  } catch(e) {}
+}
+
 function renderAdminEvents() {
   const list = document.getElementById('adminEventsList');
   const count = document.getElementById('eventsAdminCount');
@@ -2471,11 +2487,15 @@ function saveEvent() {
     if (idx !== -1) {
       events[idx] = { ...events[idx], name, category, date, time, venue, price, vipPrice, emoji, badge, description };
     }
+    saveEvents();
+    renderEvents(events);
     showToast('✓', 'Иradаržutyuny pahpanvel e');
   } else {
     // Add new
     const newId = Math.max(...events.map(e => e.id), 0) + 1;
     events.push({ id: newId, name, category, date, time, venue, price, vipPrice, emoji, badge, description, color, available: 80, total: 80 });
+    saveEvents();
+    renderEvents(events);
     showToast('✓', '"' + name + '" aveleatsvel e');
   }
   cancelEditEvent();
@@ -2488,7 +2508,9 @@ function deleteEvent(id) {
   if (!confirm('Vajit e? "' + e.name + '" khnjvi bolor kataragnerov')) return;
   const idx = events.findIndex(ev => ev.id === id);
   events.splice(idx, 1);
+  saveEvents();
   renderAdminEvents();
+  renderEvents(events);
   showToast('🗑', '"' + e.name + '" xnvats e');
 }
 
@@ -2520,6 +2542,7 @@ async function debugShowAllTickets() {
 // =====================
 // INIT
 // =====================
+loadSavedEvents();
 renderEvents(events);
 updateMyTicketsBadge();
 // Preload JSONBin cache on startup
