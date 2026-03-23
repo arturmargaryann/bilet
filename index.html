@@ -1643,7 +1643,7 @@ async function dbRead() {
     return _dbCache;
   } catch(e) {
     console.error('JSONBin read error:', e);
-    return _dbCache || { tickets: {}, orders: [] };
+    return _dbCache || { tickets: {}, orders: [], events: [] };
   }
 }
 
@@ -1668,7 +1668,7 @@ function loadRegistry() {
   return (_dbCache && _dbCache.tickets) ? _dbCache.tickets : {};
 }
 function saveRegistry(reg) {
-  const data = _dbCache || { tickets: {}, orders: [] };
+  const data = _dbCache || { tickets: {}, orders: [], events: [] };
   data.tickets = reg;
   dbWrite(data);
 }
@@ -2382,21 +2382,20 @@ function deleteMyTicket(index) {
 // =====================
 const COLORS = ['#e8c547','#6bc5ff','#ff6b6b','#c084fc','#fb923c','#4ade80','#f472b6','#38bdf8'];
 
-const LS_EVENTS = 'bilet_events';
-
-function saveEvents() {
-  try { localStorage.setItem(LS_EVENTS, JSON.stringify(events)); } catch(e) {}
+async function saveEvents() {
+  const db = _dbCache || await dbRead();
+  db.events = events;
+  await dbWrite(db);
 }
 
-function loadSavedEvents() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(LS_EVENTS));
-    if (saved && saved.length > 0) {
-      events.length = 0;
-      saved.forEach(e => events.push(e));
-    }
-  } catch(e) {}
+async function loadSavedEvents() {
+  const db = await dbRead();
+  if (db.events && db.events.length > 0) {
+    events.length = 0;
+    db.events.forEach(e => events.push(e));
+  }
 }
+
 
 function renderAdminEvents() {
   const list = document.getElementById('adminEventsList');
@@ -2463,7 +2462,7 @@ function cancelEditEvent() {
   document.getElementById('eventFormSection').style.display = 'none';
 }
 
-function saveEvent() {
+async function saveEvent() {
   const name = document.getElementById('ef_name').value.trim();
   const date = document.getElementById('ef_date').value.trim();
   const time = document.getElementById('ef_time').value.trim();
@@ -2487,14 +2486,14 @@ function saveEvent() {
     if (idx !== -1) {
       events[idx] = { ...events[idx], name, category, date, time, venue, price, vipPrice, emoji, badge, description };
     }
-    saveEvents();
+    await saveEvents();
     renderEvents(events);
-    showToast('✓', 'Иradаržutyuny pahpanvel e');
+    showToast('✓', 'Պahpanvel e');
   } else {
     // Add new
     const newId = Math.max(...events.map(e => e.id), 0) + 1;
     events.push({ id: newId, name, category, date, time, venue, price, vipPrice, emoji, badge, description, color, available: 80, total: 80 });
-    saveEvents();
+    await saveEvents();
     renderEvents(events);
     showToast('✓', '"' + name + '" aveleatsvel e');
   }
@@ -2502,13 +2501,13 @@ function saveEvent() {
   renderAdminEvents();
 }
 
-function deleteEvent(id) {
+async function deleteEvent(id) {
   const e = events.find(ev => ev.id === id);
   if (!e) return;
   if (!confirm('Vajit e? "' + e.name + '" khnjvi bolor kataragnerov')) return;
   const idx = events.findIndex(ev => ev.id === id);
   events.splice(idx, 1);
-  saveEvents();
+  await saveEvents();
   renderAdminEvents();
   renderEvents(events);
   showToast('🗑', '"' + e.name + '" xnvats e');
@@ -2542,11 +2541,13 @@ async function debugShowAllTickets() {
 // =====================
 // INIT
 // =====================
-loadSavedEvents();
-renderEvents(events);
-updateMyTicketsBadge();
-// Preload JSONBin cache on startup
-dbRead().then(() => console.log('JSONBin cache loaded'));
+// Load everything from JSONBin on startup
+(async () => {
+  await loadSavedEvents();
+  renderEvents(events);
+  updateMyTicketsBadge();
+  console.log('JSONBin loaded');
+})();
 </script>
 <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
