@@ -1488,12 +1488,13 @@
         <!-- MANUAL INPUT -->
         <div class="form-section">
           <div class="form-section-title">⌨️ Ձեռքով Մուտքագրել</div>
-          <div style="display:flex;gap:10px">
-            <input class="form-input" id="scanInput" placeholder="TK-XXXXXX..."
-              onkeydown="if(event.key==='Enter') scanTicket(document.getElementById('scanInput').value)"
-              style="flex:1">
+          <div style="display:flex;gap:10px;margin-bottom:10px">
+            <input class="form-input" id="scanInput" placeholder="TK-XXXXXX"
+              onkeydown="if(event.key==='Enter') scanTicket(this.value)"
+              style="flex:1;font-family:monospace;letter-spacing:1px">
             <button class="buy-btn" onclick="scanTicket(document.getElementById('scanInput').value)" style="padding:12px 20px;border-radius:10px;font-size:13px">Ստուգել</button>
           </div>
+          <button onclick="debugShowAllTickets()" style="background:none;border:1px solid var(--border);color:var(--text-dim);padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;width:100%">🔍 Տեսնել բոլոր պահպանված տոմսերը</button>
         </div>
 
         <!-- RESULT -->
@@ -1622,12 +1623,18 @@ let ticketType = 'standard';
 let qty = 1;
 let soldSeatsByEvent = {}; // { eventId: Set of seatIds }
 let adminOrders = [];
-let issuedTickets = {}; // { orderId: { ...ticketData, used: false } }
 const ADMIN_PASSWORD = 'admin2025';
+const LS_REGISTRY = 'bilet_ticket_registry';
 
-// ticketRegistry: { uuid -> { orderId, eventName, buyer, seats, date, time, venue, usedAt: null|timestamp } }
-let ticketRegistry = {};
-let scannedLog = []; // list of scan results shown in admin
+// ticketRegistry: { orderId -> { orderId, eventName, buyer, seats, date, time, venue, usedAt: null } }
+// Saved to localStorage so scanner works even after page reload
+function loadRegistry() {
+  try { return JSON.parse(localStorage.getItem(LS_REGISTRY)) || {}; } catch(e) { return {}; }
+}
+function saveRegistry(reg) {
+  try { localStorage.setItem(LS_REGISTRY, JSON.stringify(reg)); } catch(e) {}
+}
+let scannedLog = [];
 
 // =====================
 // ADMIN TABS
@@ -1650,13 +1657,17 @@ function showAdminTab(tab) {
 // =====================
 // QR SCANNER
 // =====================
-function scanTicket() {
-  const raw = document.getElementById('scanInput').value.trim();
+function scanTicket(rawInput) {
+  const raw = (rawInput || document.getElementById('scanInput').value || '').trim();
   const resultEl = document.getElementById('scanResult');
   if (!raw) return;
 
-  // Accept either full UUID or short TK-XXXXXX (we stored both)
-  const ticket = ticketRegistry[raw] || Object.values(ticketRegistry).find(t => t.orderId === raw);
+  // Extract TK-XXXXXX from QR data
+  const match = raw.match(/TK-\d{6}/);
+  const ticketId = match ? match[0] : raw;
+
+  const reg = loadRegistry();
+  const ticket = reg[ticketId] || reg[raw];
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString('hy-AM', { hour: '2-digit', minute: '2-digit' });
@@ -1696,8 +1707,11 @@ function scanTicket() {
     return;
   }
 
-  // VALID — mark as used
+  // VALID — mark as used and persist
   ticket.usedAt = timeStr;
+  const regToUpdate = loadRegistry();
+  const tKey = Object.keys(regToUpdate).find(k => regToUpdate[k] === ticket || regToUpdate[k].orderId === ticket.orderId);
+  if (tKey) { regToUpdate[tKey].usedAt = timeStr; saveRegistry(regToUpdate); }
   resultEl.style.display = 'block';
   resultEl.innerHTML = `
     <div style="background:rgba(74,222,128,0.08);border:2px solid var(--success);border-radius:12px;padding:20px;text-align:center">
@@ -2126,18 +2140,23 @@ function showQRModal(fn, ln) {
   });
 
   // Store ticket for verification
-  issuedTickets[orderId] = {
-    orderId,
-    buyer: `${fn} ${ln}`,
-    event: firstItem ? firstItem.event.name : '—',
-    date: firstItem ? firstItem.event.date : '—',
-    time: firstItem ? firstItem.event.time : '—',
-    venue: firstItem ? firstItem.event.venue : '—',
-    seats: firstItem ? firstItem.seats.map(s => s.id + (s.isVip ? ' VIP' : '')).join(', ') : '—',
-    amount: cart.reduce((a,b)=>a+b.total,0).toLocaleString() + '֏',
-    issuedAt: new Date().toLocaleString('hy-AM'),
-    used: false
-  };
+  // Save to ticketRegistry (localStorage) so scanner can verify
+  const reg = loadRegistry();
+  cart.forEach(item => {
+    reg[orderId] = {
+      orderId,
+      eventName: item.event.name,
+      buyer: `${fn} ${ln}`,
+      date: item.event.date,
+      time: item.event.time,
+      venue: item.event.venue,
+      seats: item.seats.map(s => s.id + (s.isVip ? ' VIP' : '')),
+      amount: item.total.toLocaleString() + '֏',
+      issuedAt: new Date().toLocaleString('hy-AM'),
+      usedAt: null
+    };
+  });
+  saveRegistry(reg);
 
   // Save to My Tickets (localStorage)
   const myTickets = loadMyTickets();
@@ -2350,8 +2369,8 @@ function renderAdminEvents() {
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-shrink:0">
-        <button class="nav-btn" onclick="startEditEvent(${e.id})" style="font-size:12px;padding:7px 14px">✏️ Խմբագել</button>
-        <button class="remove-btn" onclick="deleteEvent(${e.id})" style="font-size:12px;padding:7px 14px">🗑 Ջնջել</button>
+        <button class="nav-btn" onclick="startEditEvent(${e.id})" style="font-size:12px;padding:7px 14px">✏️ Խmb.</button>
+        <button class="remove-btn" onclick="deleteEvent(${e.id})" style="font-size:12px;padding:7px 14px">🗑 Jnjel</button>
       </div>
     </div>
   `).join('');
@@ -2359,9 +2378,9 @@ function renderAdminEvents() {
 
 function startAddEvent() {
   document.getElementById('editEventId').value = '';
-  document.getElementById('eventFormTitle').textContent = '➕ Նոր իրադարձություն';
+  document.getElementById('eventFormTitle').textContent = '➕ Նոր Иradаržutyun';
   document.getElementById('ef_name').value = '';
-  document.getElementById('ef_category').value = 'Համերգ';
+  document.getElementById('ef_category').value = 'Hamerg';
   document.getElementById('ef_date').value = '';
   document.getElementById('ef_time').value = '';
   document.getElementById('ef_venue').value = '';
@@ -2378,7 +2397,7 @@ function startEditEvent(id) {
   const e = events.find(ev => ev.id === id);
   if (!e) return;
   document.getElementById('editEventId').value = id;
-  document.getElementById('eventFormTitle').textContent = '✏️ Խմբագրել · ' + e.name;
+  document.getElementById('eventFormTitle').textContent = '✏️ Խmbagrел · ' + e.name;
   document.getElementById('ef_name').value = e.name;
   document.getElementById('ef_category').value = e.category;
   document.getElementById('ef_date').value = e.date;
@@ -2442,6 +2461,30 @@ function deleteEvent(id) {
   showToast('🗑', '"' + e.name + '" xnvats e');
 }
 
+function debugShowAllTickets() {
+  const reg = loadRegistry();
+  const keys = Object.keys(reg);
+  const resultEl = document.getElementById('scanResult');
+  resultEl.style.display = 'block';
+  if (keys.length === 0) {
+    resultEl.innerHTML = `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;color:var(--text-dim);text-align:center">Դեռ ոչ մի տոմս չի գնվել — registry-ը դատark e</div>`;
+    return;
+  }
+  resultEl.innerHTML = `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--accent)">📋 Registry-ում ${keys.length} տomser kan</div>
+      ${keys.map(k => {
+        const t = reg[k];
+        return `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span style="font-family:monospace;color:var(--accent);cursor:pointer" onclick="document.getElementById('scanInput').value='${k}'">${k}</span>
+          · ${t.eventName} · ${t.buyer}
+          ${t.usedAt ? `<span style="color:#fb923c"> · ✓ Ogtagortsvats ${t.usedAt}</span>` : '<span style="color:var(--success)"> · Avazer</span>'}
+        </div>`;
+      }).join('')}
+      <div style="font-size:11px;color:var(--text-dim);margin-top:10px">Кlik kody vra — автоматик կмутqаgrevi</div>
+    </div>`;
+}
+
 // =====================
 // INIT
 // =====================
@@ -2491,72 +2534,28 @@ function startScanLoop() {
   const ctx = canvas.getContext('2d');
   let lastScanned = '', lastTime = 0;
   scanLoop = setInterval(() => {
-    if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    if (video.readyState < 2) return;
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+    if (!w || !h) return;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(video, 0, 0, w, h);
+    const imgData = ctx.getImageData(0, 0, w, h);
     if (typeof jsQR === 'undefined') return;
-    const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-    if (code) {
+    const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+    if (code && code.data) {
       const now = Date.now();
       if (code.data !== lastScanned || now - lastTime > 3000) {
-        lastScanned = code.data; lastTime = now;
+        lastScanned = code.data;
+        lastTime = now;
         scanTicket(code.data);
       }
     }
-  }, 250);
+  }, 300);
 }
 
-function scanTicket(raw) {
-  raw = (raw || '').trim();
-  if (!raw) return;
-  document.getElementById('scanInput').value = '';
-  const match = raw.match(/TK-\d{6}/);
-  const ticketId = match ? match[0] : raw;
-  const resultEl = document.getElementById('scanResult');
-  resultEl.style.display = 'block';
-
-  const order = adminOrders.find(o => o.id === '#' + ticketId || o.id === ticketId);
-  let html = '';
-
-  if (!order) {
-    html = `<div style="background:rgba(255,107,107,0.08);border:2px solid var(--accent2);border-radius:12px;padding:24px;text-align:center">
-      <div style="font-size:52px;margin-bottom:8px">❌</div>
-      <div style="font-size:20px;font-weight:700;color:var(--accent2);font-family:'Noto Serif Armenian',serif;margin-bottom:6px">Անվավեր Տոմս</div>
-      <div style="font-size:12px;color:var(--text-dim)">${ticketId} — չի գտնվել</div>
-    </div>`;
-    playBeep('error');
-    scannedTickets.unshift({ id: ticketId, status: 'invalid', buyer: '—', event: ticketId });
-  } else if (usedTickets.has(ticketId)) {
-    const entry = scannedTickets.find(s => s.id === ticketId && s.status === 'valid');
-    html = `<div style="background:rgba(232,197,71,0.08);border:2px solid var(--accent);border-radius:12px;padding:24px;text-align:center">
-      <div style="font-size:52px;margin-bottom:8px">⚠️</div>
-      <div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'Noto Serif Armenian',serif;margin-bottom:6px">Արդեն Օգտ.</div>
-      <div style="font-size:13px;color:var(--text-mid)">${order.event}</div>
-      <div style="font-size:12px;color:var(--text-dim)">Գնորդ՝ ${order.buyer}</div>
-      ${entry ? `<div style="font-size:11px;color:var(--text-dim);margin-top:6px">Ստուգվել է ${entry.usedAt}</div>` : ''}
-    </div>`;
-    playBeep('warn');
-    scannedTickets.unshift({ id: ticketId, status: 'used', buyer: order.buyer, event: order.event });
-  } else {
-    const now = new Date().toLocaleTimeString('hy-AM', { hour: '2-digit', minute: '2-digit' });
-    usedTickets.add(ticketId);
-    html = `<div style="background:rgba(74,222,128,0.08);border:2px solid var(--success);border-radius:12px;padding:24px;text-align:center">
-      <div style="font-size:52px;margin-bottom:8px">✅</div>
-      <div style="font-size:20px;font-weight:700;color:var(--success);font-family:'Noto Serif Armenian',serif;margin-bottom:6px">Վավեր Տոմս</div>
-      <div style="font-size:13px;color:var(--text-mid)">${order.event}</div>
-      <div style="font-size:12px;color:var(--text-dim)">Գնորդ՝ ${order.buyer} · ${order.amount}</div>
-      <div style="font-size:11px;color:var(--text-dim);margin-top:6px">✓ Մուտք թույլ. ${now}</div>
-    </div>`;
-    playBeep('success');
-    scannedTickets.unshift({ id: ticketId, status: 'valid', buyer: order.buyer, event: order.event, usedAt: now });
-  }
-
-  resultEl.innerHTML = html;
-  renderScannedList();
-  if (cameraStream) setTimeout(() => { resultEl.style.display = 'none'; }, 4000);
-}
+// Camera uses main scanTicket(raw) above
 
 function renderScannedList() {
   const el = document.getElementById('scannedList');
