@@ -1624,15 +1624,54 @@ let qty = 1;
 let soldSeatsByEvent = {}; // { eventId: Set of seatIds }
 let adminOrders = [];
 const ADMIN_PASSWORD = 'admin2025';
-const LS_REGISTRY = 'bilet_ticket_registry';
+// =====================
+// JSONBIN CONFIG
+// =====================
+const JSONBIN_ID  = '69c0d9ceb7ec241ddc93ad1d';
+const JSONBIN_KEY = '$2a$10$Gi.k.77zA4oqHpM7hiWOPu.sz164TIhfB/m5M0o91k2DOfHCi08b6';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
 
-// ticketRegistry: { orderId -> { orderId, eventName, buyer, seats, date, time, venue, usedAt: null } }
-// Saved to localStorage so scanner works even after page reload
+// In-memory cache so UI doesn't lag
+let _dbCache = null;
+
+async function dbRead() {
+  try {
+    const r = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    const j = await r.json();
+    _dbCache = j.record;
+    return _dbCache;
+  } catch(e) {
+    console.error('JSONBin read error:', e);
+    return _dbCache || { tickets: {}, orders: [] };
+  }
+}
+
+async function dbWrite(data) {
+  _dbCache = data;
+  try {
+    await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(data)
+    });
+  } catch(e) {
+    console.error('JSONBin write error:', e);
+  }
+}
+
+// Legacy sync wrappers — կshxatum en async callers-ի hamar
 function loadRegistry() {
-  try { return JSON.parse(localStorage.getItem(LS_REGISTRY)) || {}; } catch(e) { return {}; }
+  return (_dbCache && _dbCache.tickets) ? _dbCache.tickets : {};
 }
 function saveRegistry(reg) {
-  try { localStorage.setItem(LS_REGISTRY, JSON.stringify(reg)); } catch(e) {}
+  const data = _dbCache || { tickets: {}, orders: [] };
+  data.tickets = reg;
+  dbWrite(data);
 }
 let scannedLog = [];
 
@@ -1651,22 +1690,27 @@ function showAdminTab(tab) {
   });
   if (tab === 'orders') renderAdmin();
   if (tab === 'events') renderAdminEvents();
-  if (tab === 'scanner') renderScannedLog();
+  if (tab === 'scanner') { dbRead().then(() => renderScannedLog()); }
 }
 
 // =====================
 // QR SCANNER
 // =====================
-function scanTicket(rawInput) {
+async function scanTicket(rawInput) {
   const raw = (rawInput || document.getElementById('scanInput').value || '').trim();
   const resultEl = document.getElementById('scanResult');
   if (!raw) return;
+
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">⏳ Ступում ем...</div>';
 
   // Extract TK-XXXXXX from QR data
   const match = raw.match(/TK-\d{6}/);
   const ticketId = match ? match[0] : raw;
 
-  const reg = loadRegistry();
+  // Always read fresh from JSONBin
+  const db = await dbRead();
+  const reg = db.tickets || {};
   const ticket = reg[ticketId] || reg[raw];
 
   const now = new Date();
@@ -1707,11 +1751,10 @@ function scanTicket(rawInput) {
     return;
   }
 
-  // VALID — mark as used and persist
+  // VALID — mark as used and persist to JSONBin
   ticket.usedAt = timeStr;
-  const regToUpdate = loadRegistry();
-  const tKey = Object.keys(regToUpdate).find(k => regToUpdate[k] === ticket || regToUpdate[k].orderId === ticket.orderId);
-  if (tKey) { regToUpdate[tKey].usedAt = timeStr; saveRegistry(regToUpdate); }
+  reg[ticketId] = ticket;
+  saveRegistry(reg);
   resultEl.style.display = 'block';
   resultEl.innerHTML = `
     <div style="background:rgba(74,222,128,0.08);border:2px solid var(--success);border-radius:12px;padding:20px;text-align:center">
@@ -2140,7 +2183,7 @@ function showQRModal(fn, ln) {
   });
 
   // Store ticket for verification
-  // Save to ticketRegistry (localStorage) so scanner can verify
+  // Save to JSONBin so any device can verify
   const reg = loadRegistry();
   cart.forEach(item => {
     reg[orderId] = {
@@ -2461,8 +2504,9 @@ function deleteEvent(id) {
   showToast('🗑', '"' + e.name + '" xnvats e');
 }
 
-function debugShowAllTickets() {
-  const reg = loadRegistry();
+async function debugShowAllTickets() {
+  const db = await dbRead();
+  const reg = db.tickets || {};
   const keys = Object.keys(reg);
   const resultEl = document.getElementById('scanResult');
   resultEl.style.display = 'block';
@@ -2490,6 +2534,8 @@ function debugShowAllTickets() {
 // =====================
 renderEvents(events);
 updateMyTicketsBadge();
+// Preload JSONBin cache on startup
+dbRead().then(() => console.log('JSONBin cache loaded'));
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 <script>
