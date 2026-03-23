@@ -1545,7 +1545,6 @@
 
 <footer>© 2025 ԲԻԼԵԹ — Տոմսերի Առցանց Վաճառք · Երևան, Հայաստան</footer>
 
-<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 <script>
 const events = [
   {
@@ -2141,33 +2140,13 @@ function completeOrder() {
 // QR MODAL
 // =====================
 function generateQRSvg(text) {
-  // Returns a placeholder div; real QR rendered by renderAllQRCodes() after DOM insert
-  return `<div class="qr-target" data-text="${text}" style="width:160px;height:160px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#aaa">QR...</div>`;
+  // Google Charts API — 100% scannable, ոչ մի library պետq չէ
+  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=' + encodeURIComponent(text);
+  return `<img src="${url}" width="200" height="200" style="display:block;border-radius:4px" alt="QR">`;
 }
 
 function renderAllQRCodes() {
-  if (typeof QRCode === 'undefined') {
-    setTimeout(renderAllQRCodes, 200);
-    return;
-  }
-  document.querySelectorAll('.qr-target[data-text]').forEach(el => {
-    if (el.dataset.rendered) return;
-    el.dataset.rendered = '1';
-    el.innerHTML = '';
-    el.style.display = 'block';
-    try {
-      new QRCode(el, {
-        text: el.dataset.text,
-        width: 160,
-        height: 160,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    } catch(e) {
-      el.textContent = el.dataset.text;
-    }
-  });
+  // No longer needed — img src-ը ուղղակի load eлinum e
 }
 
 function showQRModal(fn, ln) {
