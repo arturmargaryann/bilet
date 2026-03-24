@@ -1701,7 +1701,7 @@ async function scanTicket(rawInput) {
   if (!raw) return;
 
   resultEl.style.display = 'block';
-  resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">⏳ Ступում ем...</div>';
+  resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">⏳ Ստուգվում է ․․․</div>';
 
   // Extract TK-XXXXXX from QR data
   const match = raw.match(/TK-\d{6}/);
