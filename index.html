@@ -1,1242 +1,2665 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hy">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>School Management System</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>ԲԻԼԵԹ — Տոմսերի առցանց վաճառք</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+Armenian:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0f1117;--surface:#161b27;--surface2:#1e2535;--surface3:#252d3d;
-  --border:#2a3347;--border2:#354060;--accent:#4f8ef7;--accent2:#7c3aed;
-  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;
-  --text:#e8eaf0;--text2:#8b93a8;--text3:#555f77;
-  --radius:10px;--radius2:14px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans Armenian',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.hidden{display:none!important;}
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 40%,#1a2540 0%,var(--bg) 60%);}
-.login-box{width:380px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:2.5rem;}
-.login-logo{text-align:center;margin-bottom:2rem;}
-.login-logo .icon{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px;}
-.login-logo h1{font-size:18px;font-weight:600;}
-.login-logo p{font-size:13px;color:var(--text2);margin-top:4px;}
-.role-tabs{display:flex;gap:4px;background:var(--surface2);border-radius:var(--radius);padding:4px;margin-bottom:1.5rem;}
-.role-tab{flex:1;text-align:center;padding:8px;border-radius:7px;font-size:13px;cursor:pointer;color:var(--text2);transition:all 0.2s;}
-.role-tab.active{background:var(--surface3);color:var(--text);font-weight:500;}
-.form-group{margin-bottom:14px;}
-.form-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;}
-.form-group input{width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border 0.2s;}
-.form-group input:focus{border-color:var(--accent);}
-.login-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--accent),#3b70d4);border:none;border-radius:var(--radius);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;}
-.login-btn:hover{opacity:0.9;}
-.error-msg{font-size:12px;color:var(--red);text-align:center;margin-top:8px;min-height:16px;}
-#app-screen{display:flex;min-height:100vh;}
-.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;}
-.sidebar-header{padding:20px 18px 16px;border-bottom:1px solid var(--border);}
-.sidebar-header .brand{font-size:15px;font-weight:700;}
-.sidebar-header .user-info{font-size:12px;color:var(--text2);margin-top:4px;}
-.sidebar-header .user-role{display:inline-block;margin-top:6px;font-size:10px;padding:2px 8px;background:var(--surface3);border-radius:20px;color:var(--accent);font-family:'JetBrains Mono',monospace;}
-.sidebar-nav{flex:1;padding:12px 10px;}
-.nav-section{font-size:10px;color:var(--text3);padding:8px 8px 4px;text-transform:uppercase;letter-spacing:0.08em;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;color:var(--text2);cursor:pointer;transition:all 0.15s;margin-bottom:2px;}
-.nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:linear-gradient(135deg,rgba(79,142,247,0.15),rgba(124,58,237,0.1));color:var(--accent);}
-.nav-item .ni{font-size:16px;width:20px;text-align:center;}
-.sidebar-footer{padding:14px;border-top:1px solid var(--border);}
-.logout-btn{width:100%;padding:8px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.15s;}
-.logout-btn:hover{border-color:var(--red);color:var(--red);}
-.main{flex:1;overflow-y:auto;}
-.page{padding:28px 32px;display:none;}
-.page.active{display:block;}
-.page-title{font-size:22px;font-weight:700;margin-bottom:4px;}
-.page-sub{font-size:13px;color:var(--text2);margin-bottom:24px;}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:18px 20px;}
-.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;}
-.stat-card .sc-val{font-size:28px;font-weight:700;}
-.stat-card .sc-sub{font-size:11px;color:var(--text2);margin-top:4px;}
-.stat-card.accent{border-color:rgba(79,142,247,0.3);}
-.stat-card.red{border-color:rgba(239,68,68,0.3);}
-.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);overflow:hidden;margin-bottom:20px;}
-.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.table-header h3{font-size:14px;font-weight:600;}
-.btn{padding:7px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.15s;font-weight:500;}
-.btn-primary{background:var(--accent);border:none;color:#fff;}
-.btn-primary:hover{background:#3b70d4;}
-.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);}
-.btn-danger:hover{background:rgba(239,68,68,0.1);}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
-table{width:100%;border-collapse:collapse;}
-th{padding:10px 16px;text-align:left;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border);font-weight:500;}
-td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:var(--surface2);}
-.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500;}
-.badge-10,.badge-9{background:rgba(34,197,94,0.15);color:#4ade80;}
-.badge-8,.badge-7{background:rgba(79,142,247,0.15);color:#7ab3f8;}
-.badge-6,.badge-5{background:rgba(245,158,11,0.15);color:#fbbf24;}
-.badge-4,.badge-3,.badge-2,.badge-1{background:rgba(239,68,68,0.15);color:#f87171;}
-.badge-present{background:rgba(34,197,94,0.15);color:#4ade80;}
-.badge-absent{background:rgba(239,68,68,0.15);color:#f87171;}
-.badge-late{background:rgba(245,158,11,0.15);color:#fbbf24;}
-.badge-admin{background:rgba(124,58,237,0.2);color:#a78bfa;}
-.grade-input{width:42px;padding:5px;text-align:center;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'JetBrains Mono',monospace;}
-.grade-input:focus{outline:none;border-color:var(--accent);}
-.att-btn{padding:4px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:500;border:none;transition:all 0.15s;margin-right:6px;}
-.date-chip{padding:6px 14px;border-radius:8px;font-size:12px;background:var(--surface);border:1px solid var(--border);cursor:pointer;color:var(--text2);transition:all 0.15s;}
-.date-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.select-row{display:flex;gap:12px;margin-bottom:20px;align-items:center;flex-wrap:wrap;}
-.select-row label{font-size:13px;color:var(--text2);}
-select{padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;}
-select:focus{border-color:var(--accent);}
-.notif{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);margin-bottom:10px;}
-.notif-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
-.notif-text{font-size:13px;line-height:1.6;}
-.notif-time{font-size:11px;color:var(--text3);margin-top:3px;}
-.avatar{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
-.av-blue{background:rgba(79,142,247,0.2);color:var(--accent);}
-.av-purple{background:rgba(124,58,237,0.2);color:#a78bfa;}
-.av-green{background:rgba(34,197,94,0.2);color:#4ade80;}
-.av-red{background:rgba(239,68,68,0.2);color:#f87171;}
-.td-flex{display:flex;align-items:center;gap:10px;}
-.save-flash{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;}
-.save-flash.show{opacity:1;}
-.loading-overlay{position:fixed;inset:0;background:rgba(15,17,23,0.8);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px;}
-.loading-overlay p{color:var(--text2);font-size:14px;}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:24px;margin-bottom:20px;}
-.form-card h3{font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
-.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px;}
-.form-field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;}
-.form-field input,.form-field select{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;}
-.form-field input:focus,.form-field select:focus{border-color:var(--accent);}
-.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:12px;margin:3px;}
-.tag-remove{cursor:pointer;color:var(--text3);font-size:14px;line-height:1;}
-.tag-remove:hover{color:var(--red);}
-.diary-day-header{padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500;}
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3d;
+    --accent: #e8c547;
+    --accent2: #ff6b6b;
+    --accent3: #6bc5ff;
+    --text: #f0eeea;
+    --text-dim: #7a7890;
+    --text-mid: #b0adc5;
+    --success: #4ade80;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--text); }
+
+  nav { display: flex; gap: 8px; align-items: center; }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,197,71,0.06);
+  }
+
+  .cart-btn {
+    background: var(--accent);
+    border: none;
+    color: #000;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .cart-btn:hover { background: #f5d55a; transform: translateY(-1px); }
+
+  .cart-count {
+    background: var(--accent2);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    position: absolute;
+    top: -6px; right: -6px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 32px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,197,71,0.1);
+    border: 1px solid rgba(232,197,71,0.3);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: clamp(36px, 5vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+    position: relative;
+  }
+
+  h1 em::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .hero-sub {
+    color: var(--text-dim);
+    font-size: 14px;
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  /* SEARCH BAR */
+  .search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-dim); }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .filter-select:focus { border-color: var(--accent); }
+
+  .search-btn {
+    background: var(--accent);
+    border: none;
+    color: #000;
+    padding: 14px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .search-btn:hover { background: #f5d55a; }
+
+  /* SECTIONS */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .section-title span {
+    color: var(--accent);
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 400;
+    margin-left: 12px;
+  }
+
+  .see-all {
+    font-size: 12px;
+    color: var(--text-dim);
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .see-all:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* EVENTS GRID */
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+
+  .event-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .event-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .event-card-image {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .event-emoji {
+    font-size: 64px;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,0.5));
+  }
+
+  .event-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(10,10,15,0.85);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-mid);
+  }
+
+  .event-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--accent2);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .event-card-body { padding: 20px; }
+
+  .event-name {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .event-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+
+  .event-meta-item {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .event-meta-item svg { flex-shrink: 0; }
+
+  .event-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .event-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Playfair Display', serif;
+  }
+
+  .event-price small {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 400;
+    display: block;
+  }
+
+  .buy-btn {
+    background: var(--accent);
+    border: none;
+    color: #000;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .buy-btn:hover { background: #f5d55a; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* EVENT DETAIL PAGE */
+  .detail-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 32px;
+    padding: 0 32px;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+
+  .detail-back:hover { color: var(--accent); }
+
+  .detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px 60px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+  }
+
+  .detail-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100px;
+    margin-bottom: 28px;
+  }
+
+  .detail-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 36px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+
+  .dtag {
+    background: rgba(232,197,71,0.1);
+    border: 1px solid rgba(232,197,71,0.25);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .detail-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .info-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .info-box-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .info-box-value {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .detail-description {
+    color: var(--text-mid);
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+
+  /* HALL/SEAT PICKER */
+  .seat-picker {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: sticky;
+    top: 80px;
+  }
+
+  .seat-picker-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  /* STAGE */
+  .stage {
+    background: linear-gradient(135deg, rgba(232,197,71,0.15), rgba(232,197,71,0.05));
+    border: 1px solid rgba(232,197,71,0.3);
+    border-radius: 8px 8px 40px 40px;
+    text-align: center;
+    padding: 10px;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .hall-container { overflow-x: auto; }
+
+  .hall-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 20px;
+    min-width: 280px;
+  }
+
+  .hall-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .row-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .seat {
+    width: 20px; height: 18px;
+    border-radius: 4px 4px 2px 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    position: relative;
+  }
+
+  .seat.available { background: var(--surface2); border: 1px solid var(--border); }
+  .seat.available:hover { background: rgba(232,197,71,0.3); border-color: var(--accent); transform: scale(1.15); }
+  .seat.selected { background: var(--accent); border: 1px solid var(--accent); }
+  .seat.occupied { background: #2a1f1f; border: 1px solid #3a2a2a; cursor: not-allowed; opacity: 0.5; }
+  .seat.vip { background: var(--surface2); border: 1px solid rgba(107,197,255,0.4); }
+  .seat.vip:hover { background: rgba(107,197,255,0.25); border-color: var(--accent3); transform: scale(1.15); }
+  .seat.vip.selected { background: var(--accent3); border-color: var(--accent3); }
+
+  .seat-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .legend-dot {
+    width: 14px; height: 12px;
+    border-radius: 3px 3px 2px 2px;
+  }
+
+  .ticket-types { margin-bottom: 20px; }
+
+  .ticket-type {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ticket-type:hover { border-color: var(--accent); }
+  .ticket-type.selected { border-color: var(--accent); background: rgba(232,197,71,0.06); }
+
+  .ticket-type-info { font-size: 13px; font-weight: 500; }
+  .ticket-type-sub { font-size: 11px; color: var(--text-dim); }
+  .ticket-type-price { font-size: 16px; color: var(--accent); font-weight: 700; }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .qty-btn {
+    width: 32px; height: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .qty-num { font-size: 18px; font-weight: 700; min-width: 30px; text-align: center; }
+
+  .selected-seats-info {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+    min-height: 48px;
+  }
+
+  .price-breakdown {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .price-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .add-cart-btn {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: #000;
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .add-cart-btn:hover { background: #f5d55a; transform: translateY(-1px); }
+  .add-cart-btn:disabled { background: var(--border); color: var(--text-dim); cursor: not-allowed; transform: none; }
+
+  /* CART PAGE */
+  .page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .page-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 32px;
+  }
+
+  .cart-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+
+  .cart-item-icon {
+    font-size: 40px;
+    width: 60px;
+    height: 60px;
+    background: var(--surface2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .cart-item-body { flex: 1; }
+
+  .cart-item-name {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .cart-item-detail {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .cart-item-seats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .seat-chip {
+    background: rgba(232,197,71,0.1);
+    border: 1px solid rgba(232,197,71,0.3);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+
+  .cart-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .cart-item-price { font-size: 20px; font-weight: 700; color: var(--accent); }
+
+  .remove-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+
+  .remove-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .cart-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+  }
+
+  .cart-summary-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 22px;
+    font-weight: 700;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .checkout-btn {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: #000;
+    padding: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 20px;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .checkout-btn:hover { background: #f5d55a; transform: translateY(-1px); }
+  .checkout-btn:disabled { background: var(--border); color: var(--text-dim); cursor: not-allowed; transform: none; }
+
+  /* CHECKOUT FORM */
+  .checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+  }
+
+  .form-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .form-section-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-row.full { grid-template-columns: 1fr; }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--text-dim); }
+
+  .payment-methods {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .payment-method {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .payment-method:hover { border-color: var(--accent); }
+  .payment-method.selected { border-color: var(--accent); background: rgba(232,197,71,0.06); }
+  .payment-method-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+  .payment-method-label { font-size: 11px; color: var(--text-dim); }
+
+  .order-summary-sticky {
+    position: sticky;
+    top: 80px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .order-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .order-item-icon { font-size: 28px; }
+
+  .order-item-details { flex: 1; }
+
+  .order-item-name {
+    font-size: 13px;
+    font-family: 'Noto Serif Armenian', serif;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .order-item-sub { font-size: 11px; color: var(--text-dim); }
+
+  .order-item-price { font-size: 14px; font-weight: 700; color: var(--accent); }
+
+  /* QR MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+  }
+
+  .modal-overlay.show .modal { transform: translateY(0); }
+
+  .modal-success-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .modal-title {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .modal-sub {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* QR CODE */
+  .qr-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+
+  .qr-code {
+    width: 160px;
+    height: 160px;
+    display: block;
+  }
+
+  .ticket-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ticket-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3), var(--accent2));
+  }
+
+  .ticket-card-name {
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .ticket-detail {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+
+  .ticket-id {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .modal-close-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .modal-close-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ADMIN PAGE */
+  .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 900;
+    font-family: 'Playfair Display', serif;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--text-dim); }
+
+  .admin-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .admin-table-header {
+    display: flex;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .admin-table-row {
+    display: flex;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    align-items: center;
+    transition: background 0.2s;
+  }
+
+  .admin-table-row:hover { background: var(--surface2); }
+  .admin-table-row:last-child { border-bottom: none; }
+
+  .col-id { width: 100px; color: var(--text-dim); font-size: 11px; }
+  .col-event { flex: 1; font-family: 'Noto Serif Armenian', serif; font-weight: 600; }
+  .col-buyer { width: 160px; color: var(--text-mid); }
+  .col-date { width: 130px; color: var(--text-dim); font-size: 12px; }
+  .col-amount { width: 100px; color: var(--accent); font-weight: 700; }
+  .col-status { width: 100px; }
+
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .status-success { background: rgba(74,222,128,0.1); color: var(--success); border: 1px solid rgba(74,222,128,0.3); }
+  .status-pending { background: rgba(232,197,71,0.1); color: var(--accent); border: 1px solid rgba(232,197,71,0.3); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateX(200px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 2000;
+    max-width: 300px;
+  }
+
+  .toast.show { transform: translateX(0); opacity: 1; }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 32px;
+    color: var(--text-dim);
+  }
+
+  .empty-state-icon { font-size: 64px; margin-bottom: 16px; display: block; }
+
+  .empty-state-text { font-family: 'Noto Serif Armenian', serif; font-size: 18px; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 40px;
+  }
+
+  @keyframes scanAnim {
+    0% { top: 4px; }
+    50% { top: calc(100% - 6px); }
+    100% { top: 4px; }
+  }
+
+  @media (max-width: 768px) {
+    .detail-container, .checkout-grid { grid-template-columns: 1fr; }
+    .admin-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+    header { padding: 0 16px; }
+    .hero, .page-container { padding-left: 16px; padding-right: 16px; }
+  }
 </style>
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="icon">🏫</div>
-      <h1>SchoolDesk</h1>
-      <p>School Management System</p>
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#" onclick="showPage('home')">ԲԻԼԵ<span>Թ</span></a>
+  <nav>
+    <button class="nav-btn active" onclick="showPage('home')">Գլխավոր</button>
+    <button class="nav-btn" onclick="showPage('mytickets')" id="myTicketsBtn">🎟️ Իմ Տոմսերը <span id="myTicketsCount" style="display:none;background:var(--accent);color:#000;font-size:10px;font-weight:700;border-radius:100px;padding:1px 6px;margin-left:4px"></span></button>
+    <button class="nav-btn" onclick="promptAdmin()">Admin</button>
+    <button class="cart-btn" onclick="showPage('cart')">
+      🛒 Զամբյուղ
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </nav>
+</header>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">Ուղիղ հեռարձակում · Երևան</div>
+    <h1>Բոլոր <em>իրադարձությունները</em><br>մեկ տեղում</h1>
+    <p class="hero-sub">Համերգներ, կինո, թատրոն եւ ավելին — ամրագրեք տոմսը մի քանի կտտոցով:</p>
+
+    <div class="search-bar">
+      <input class="search-input" type="text" id="searchInput" placeholder="Որոնել իրադարձություն..." oninput="filterEvents()">
+      <select class="filter-select" id="categoryFilter" onchange="filterEvents()">
+        <option value="">Բոլոր կատեգորիաները</option>
+        <option value="Համերգ">Համերգ</option>
+        <option value="Թատրոն">Թատրոն</option>
+        <option value="Կինո">Կինո</option>
+      </select>
+      <button class="search-btn">🔍 Որոնել</button>
     </div>
-    <div class="role-tabs">
-      <div class="role-tab active" onclick="setRole('teacher')">Teacher</div>
-      <div class="role-tab" onclick="setRole('student')">Student</div>
-      <div class="role-tab" onclick="setRole('parent')">Parent</div>
-      <div class="role-tab" onclick="setRole('admin')">Admin</div>
+
+    <div class="section-header">
+      <div class="section-title">Մոտ Իրադարձություններ <span id="eventCount"></span></div>
     </div>
-    <div class="form-group">
-      <label>Username</label>
-      <input type="text" id="username" placeholder="Enter username...">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="login-btn" onclick="doLogin()">Sign In</button>
-    <div class="error-msg" id="login-error"></div>
+
+    <div class="events-grid" id="eventsGrid"></div>
   </div>
 </div>
 
-<div id="app-screen" class="hidden">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="brand">🏫 SchoolDesk</div>
-      <div class="user-info" id="sidebar-user"></div>
-      <div class="user-role" id="sidebar-role"></div>
-    </div>
-    <nav class="sidebar-nav" id="sidebar-nav"></nav>
-    <div class="sidebar-footer">
-      <button class="logout-btn" onclick="logout()">← Sign Out</button>
-    </div>
+<!-- EVENT DETAIL PAGE -->
+<div class="page" id="page-detail">
+  <div style="padding-top: 32px;">
+    <button class="detail-back" onclick="showPage('home')">← Վերադառնալ</button>
+    <div class="detail-container" id="detailContainer"></div>
   </div>
-  <div class="main" id="main-content"></div>
 </div>
 
-<div class="loading-overlay hidden" id="loading-overlay">
-  <div class="spinner"></div>
-  <p id="loading-text">Loading...</p>
+<!-- CART PAGE -->
+<div class="page" id="page-cart">
+  <div class="page-container">
+    <h2 class="page-title">🎟️ Իմ Զամբյուղը</h2>
+    <div id="cartContent"></div>
+  </div>
 </div>
-<div class="save-flash" id="save-flash">✓ Saved</div>
+
+<!-- CHECKOUT PAGE -->
+<div class="page" id="page-checkout">
+  <div class="page-container">
+    <h2 class="page-title">💳 Վճարում</h2>
+    <div class="checkout-grid">
+      <div>
+        <div class="form-section">
+          <div class="form-section-title">👤 Անձնական Տվյալներ</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Անուն</label>
+              <input class="form-input" placeholder="Արամ" id="firstName">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ազգանուն</label>
+              <input class="form-input" placeholder="Հակոբյան" id="lastName">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label class="form-label">Էլ. Հասցե</label>
+              <input class="form-input" placeholder="aram@example.com" id="email" type="email">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label class="form-label">Հեռախոս</label>
+              <input class="form-input" placeholder="+374 XX XXX XXX" id="phone">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">💳 Վճարման Եղանակ</div>
+          <div class="payment-methods">
+            <div class="payment-method selected" onclick="selectPayment(this)">
+              <span class="payment-method-icon">💳</span>
+              <div class="payment-method-label">Քարտ</div>
+            </div>
+            <div class="payment-method" onclick="selectPayment(this)">
+              <span class="payment-method-icon">🏦</span>
+              <div class="payment-method-label">Բանկ</div>
+            </div>
+            <div class="payment-method" onclick="selectPayment(this)">
+              <span class="payment-method-icon">💵</span>
+              <div class="payment-method-label">Կանխիկ</div>
+            </div>
+          </div>
+          <div id="cardFields">
+            <div class="form-row full">
+              <div class="form-group">
+                <label class="form-label">Քարտի Համար</label>
+                <input class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Ժամկետ</label>
+                <input class="form-input" placeholder="MM/YY" maxlength="5">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV</label>
+                <input class="form-input" placeholder="123" maxlength="3" type="password">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="checkout-btn" onclick="completeOrder()">✓ Հաստատել Պատվերը</button>
+      </div>
+
+      <div>
+        <div class="order-summary-sticky" id="orderSummary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MY TICKETS PAGE -->
+<div class="page" id="page-mytickets">
+  <div class="page-container">
+    <h2 class="page-title">🎟️ Իմ Տոմսերը</h2>
+    <div id="myTicketsContent"></div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin">
+  <div class="page-container" style="max-width: 1100px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+      <h2 class="page-title" style="margin-bottom:0">⚙️ Admin Panel</h2>
+      <button class="nav-btn" onclick="showAdminTab('orders')" id="tab-orders" style="border-color:var(--accent);color:var(--accent)">📋 Պատվերներ</button>
+      <button class="nav-btn" onclick="showAdminTab('events')" id="tab-events">🎭 Իրադարձություններ</button>
+      <button class="nav-btn" onclick="showAdminTab('scanner')" id="tab-scanner">🔍 QR Ստուգիչ</button>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div id="adminTab-orders">
+      <div class="admin-grid" id="adminStats"></div>
+      <div class="section-header">
+        <div class="section-title">Վերջին Գործարքներ</div>
+      </div>
+      <div class="admin-table">
+        <div class="admin-table-header">
+          <div class="col-id">ID</div>
+          <div class="col-event">Իրադ.</div>
+          <div class="col-buyer">Գնորդ</div>
+          <div class="col-date">Ամսաթիվ</div>
+          <div class="col-amount">Գումար</div>
+          <div class="col-status">Կարգ.</div>
+        </div>
+        <div id="adminOrders"></div>
+      </div>
+    </div>
+
+    <!-- EVENTS TAB -->
+    <div id="adminTab-events" style="display:none">
+      <div class="form-section" id="eventFormSection" style="display:none">
+        <div class="form-section-title" id="eventFormTitle">➕ Նոր Իրադարձություն</div>
+        <input type="hidden" id="editEventId" value="">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Անուն *</label>
+            <input class="form-input" id="ef_name" placeholder="Aram Asatryan — Համerгн">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Կատegория *</label>
+            <select class="form-input" id="ef_category" style="background:var(--surface2);color:var(--text)">
+              <option value="Համerг">🎤 Համerג</option>
+              <option value="Tатрon">🎭 Tатрoн</option>
+              <option value="Kинo">🎬 Kинo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Amsativ *</label>
+            <input class="form-input" id="ef_date" placeholder="15 Ап️рил, 2025">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ժam *</label>
+            <input class="form-input" id="ef_time" placeholder="19:00">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label class="form-label">Vayr *</label>
+            <input class="form-input" id="ef_venue" placeholder="Կaren Demirjyan...">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Standard gin (֏) *</label>
+            <input class="form-input" id="ef_price" type="number" placeholder="5000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">VIP gin (֏)</label>
+            <input class="form-input" id="ef_vipPrice" type="number" placeholder="12000">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Emoji</label>
+            <input class="form-input" id="ef_emoji" placeholder="🎤" maxlength="4">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Badge</label>
+            <input class="form-input" id="ef_badge" placeholder="ՆՈՐ · HOT · ПREMIERA">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label class="form-label">Nkaragrutyun</label>
+            <textarea class="form-input" id="ef_desc" rows="3" style="resize:vertical" placeholder="Iradаržutyаn masin..."></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="add-cart-btn" onclick="saveEvent()" style="flex:1">💾 Pahpanel</button>
+          <button class="modal-close-btn" onclick="cancelEditEvent()" style="width:130px">Cheharkanel</button>
+        </div>
+      </div>
+      <div class="section-header">
+        <div class="section-title">Iradаržutyunnern <span id="eventsAdminCount" style="color:var(--text-dim);font-size:13px;font-family:monospace;font-weight:400"></span></div>
+        <button class="buy-btn" onclick="startAddEvent()" style="padding:10px 20px;border-radius:8px;font-size:13px">➕ Nor</button>
+      </div>
+      <div id="adminEventsList"></div>
+    </div>
+
+    <!-- SCANNER TAB -->
+    <div id="adminTab-scanner" style="display:none">
+      <div style="max-width:520px;margin:0 auto">
+
+        <!-- CAMERA SCANNER -->
+        <div class="form-section">
+          <div class="form-section-title">📷 Կամerayov Ступел</div>
+          <div id="cameraStart">
+            <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">Սеղмиr кнопкан — ծрагиры автomат карда QR-ы</p>
+            <button class="add-cart-btn" onclick="startCamera()">📷 Կամerան Мiatsnel</button>
+          </div>
+          <div id="cameraArea" style="display:none">
+            <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;margin-bottom:12px">
+              <video id="qrVideo" style="width:100%;display:block;border-radius:12px;max-height:300px;object-fit:cover" playsinline autoplay muted></video>
+              <canvas id="qrCanvas" style="display:none"></canvas>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+                <div style="width:180px;height:180px;position:relative">
+                  <div style="position:absolute;top:0;left:0;width:28px;height:28px;border-top:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:3px 0 0 0"></div>
+                  <div style="position:absolute;top:0;right:0;width:28px;height:28px;border-top:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 3px 0 0"></div>
+                  <div style="position:absolute;bottom:0;left:0;width:28px;height:28px;border-bottom:3px solid var(--accent);border-left:3px solid var(--accent);border-radius:0 0 0 3px"></div>
+                  <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-bottom:3px solid var(--accent);border-right:3px solid var(--accent);border-radius:0 0 3px 0"></div>
+                  <div style="position:absolute;left:4px;right:4px;height:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:scanAnim 2s linear infinite"></div>
+                </div>
+              </div>
+            </div>
+            <div id="scanStatus" style="font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:12px">🔍 Pos QR-ы frame-ի мej...</div>
+            <button class="remove-btn" onclick="stopCamera()" style="width:100%;padding:10px;text-align:center">■ Կамerան Anjaтel</button>
+          </div>
+          <div id="cameraError" style="display:none;color:var(--accent2);font-size:13px;margin-top:12px;padding:12px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:8px"></div>
+        </div>
+
+        <!-- MANUAL INPUT -->
+        <div class="form-section">
+          <div class="form-section-title">⌨️ Ձեռքով Մուտքագրել</div>
+          <div style="display:flex;gap:10px;margin-bottom:10px">
+            <input class="form-input" id="scanInput" placeholder="TK-XXXXXX"
+              onkeydown="if(event.key==='Enter') scanTicket(this.value)"
+              style="flex:1;font-family:monospace;letter-spacing:1px">
+            <button class="buy-btn" onclick="scanTicket(document.getElementById('scanInput').value)" style="padding:12px 20px;border-radius:10px;font-size:13px">Ստուգել</button>
+          </div>
+          <button onclick="debugShowAllTickets()" style="background:none;border:1px solid var(--border);color:var(--text-dim);padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;width:100%">🔍 Տեսնել բոլոր պահպանված տոմսերը</button>
+        </div>
+
+        <!-- RESULT -->
+        <div id="scanResult" style="display:none;margin-bottom:20px"></div>
+
+        <!-- SCANNED LIST -->
+        <div class="form-section">
+          <div class="form-section-title" style="display:flex;justify-content:space-between;align-items:center">
+            <span>📊 Ստուգված Տոմսեր</span>
+            <button class="remove-btn" onclick="clearScanned()" style="font-size:11px">Մաքրել</button>
+          </div>
+          <div id="scannedList">
+            <div class="empty-state" style="padding:30px"><span class="empty-state-icon" style="font-size:36px">📭</span><div class="empty-state-text" style="font-size:14px">Դեռ ոչ մի տոմս չի ստուգվել</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal" style="max-width:360px">
+    <span class="modal-success-icon">🔐</span>
+    <div class="modal-title">Admin Մուտք</div>
+    <p class="modal-sub">Մուտքագրեք ադմինի կոդը շարունակելու համար:</p>
+    <div class="form-group" style="text-align:left;margin-bottom:8px">
+      <label class="form-label">Կոդ</label>
+      <input class="form-input" type="password" id="adminPwInput" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') checkAdminLogin()">
+    </div>
+    <div id="adminPwError" style="display:none;color:var(--accent2);font-size:12px;margin-bottom:12px">❌ Սխալ կոդ, կրկին փորձեք</div>
+    <button class="add-cart-btn" onclick="checkAdminLogin()" style="margin-bottom:10px">Մուտք →</button>
+    <button class="modal-close-btn" onclick="closeAdminModal()">Չեղարկել</button>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal" id="qrModalContent"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg"></span>
+</div>
+
+<footer>© 2025 ԲԻԼԵԹ — Տոմսերի Առցանց Վաճառք · Երևան, Հայաստան</footer>
 
 <script>
-// ===================== CONFIG =====================
-const API_KEY = '$2a$10$Gi.k.77zA4oqHpM7hiWOPu.sz164TIhfB/m5M0o91k2DOfHCi08b6';
-const BIN_SCHOOL  = '69be81f0b7ec241ddc8bb006'; // users, classes, schedule
-const BIN_GRADES  = '69be81fdaa77b81da90584f9'; // grades + lessonInfo
-const BIN_ATT     = '69be81feaa77b81da90584fe'; // attendance
+let events = [
+  {
+    id: 1, name: "Aram Asatryan — Հոբելյանական Համերգ",
+    category: "Համերգ", emoji: "🎤",
+    date: "15 Ապրիլ, 2025", time: "19:00",
+    venue: "Կարեն Դեմիրճյան Մարզահամերգային Համալիր",
+    city: "Երևան", price: 5000, vipPrice: 12000,
+    color: "#e8c547",
+    available: 340, total: 500,
+    description: "Հայ ժողովրդական երաժշտության անվանի կատարող Արամ Ասատրյանի հոբելյանական մեծ համերգը Երևանում: Ծրագրում ներկայացված կլինեն բոլոր ժամանակների հայտնի ստեղծագործությունները:",
+    badge: "ՆՈՐ"
+  },
+  {
+    id: 2, name: "Hamlet — Ուիլյամ Շեքսպիր",
+    category: "Թատրոն", emoji: "🎭",
+    date: "22 Ապրիլ, 2025", time: "18:30",
+    venue: "Հ. Պարոնյանի անվ. Երաժշտական Կոմեդիայի Թատրոն",
+    city: "Երևան", price: 3500, vipPrice: 8000,
+    color: "#6bc5ff",
+    available: 120, total: 200,
+    description: "Շեքսպիրի «Համլետ» ողբերգության հայկական բեմադրությունը: Հայտնի դերասաններով հրաշալի ներկայացում, որը կխոսի ժամանակի, կյանքի եւ ընտրության մասին:",
+    badge: "ՔԻՉ ՄՆԱՑ"
+  },
+  {
+    id: 3, name: "Interstellar — Կրկնադիտում 4K IMAX",
+    category: "Կինո", emoji: "🚀",
+    date: "18 Ապրիլ, 2025", time: "20:00",
+    venue: "Moscow Cinema IMAX",
+    city: "Երևան", price: 2500, vipPrice: 4500,
+    color: "#ff6b6b",
+    available: 200, total: 280,
+    description: "Կրիստոֆեր Նոլանի «Interstellar» ֆիլմի հատուկ 4K IMAX կրկնադիտումը: Տիեզերքի անծայրածիր տարածքներ, ժամանակի հարաբերականություն եւ մայրական սեր:",
+    badge: null
+  },
+  {
+    id: 4, name: "Tigran Hamasyan — Jazz Night",
+    category: "Համերգ", emoji: "🎹",
+    date: "3 Մայիս, 2025", time: "20:30",
+    venue: "Ֆիլհարմոնիա",
+    city: "Երևան", price: 7000, vipPrice: 15000,
+    color: "#c084fc",
+    available: 80, total: 300,
+    description: "Համաշխարհային ճանաչում ունեցող հայ ջազ պիանիստ Տիգրան Համասյանի եզակի ելույթը Երևանում: Ջազ, ֆոլք եւ ժամանակակից ձայներ:",
+    badge: "HOT"
+  },
+  {
+    id: 5, name: "Dune: Part Three — Պրեմիերա",
+    category: "Կինո", emoji: "🏜️",
+    date: "25 Ապրիլ, 2025", time: "21:00",
+    venue: "Nairi Cinema",
+    city: "Երևան", price: 3000, vipPrice: 5500,
+    color: "#fb923c",
+    available: 160, total: 220,
+    description: "Dune գիտական-ֆանտաստիկ ֆրանշիզայի երրորդ մասի Հայաստանում ցուցադրությունը: Ա. Վիլնյովի ռեժիսուրայով տիեզերական էպոս:",
+    badge: "ՊՐԵՄԻԵՐԱ"
+  },
+  {
+    id: 6, name: "Դատախազի Աղջիկը — Հայկական Ֆիլմ",
+    category: "Կինո", emoji: "🎬",
+    date: "12 Ապրիլ, 2025", time: "17:00",
+    venue: "Հայֆիլմ Կինոթատրոն",
+    city: "Երևան", price: 1500, vipPrice: 2500,
+    color: "#4ade80",
+    available: 95, total: 150,
+    description: "Հայկական ֆիլմ, որն արդեն հավաքել է մի շարք մրցանակներ: Ուժեղ կնոջ մասին դրամա, ճշմարտություն փնտրող դատախազուհու պատմությունը:",
+    badge: null
+  }
+];
 
-// ===================== STATIC ADMIN =====================
-const ADMIN = { pass: 'SchoolAdmin2026', name: 'Administrator' };
+let cart = [];
+let currentEvent = null;
+let selectedSeats = [];
+let ticketType = 'standard';
+let qty = 1;
+let soldSeatsByEvent = {}; // { eventId: Set of seatIds }
+let adminOrders = [];
+const ADMIN_PASSWORD = 'admin2025';
+// =====================
+// JSONBIN CONFIG
+// =====================
+const JSONBIN_ID  = '69c0d9ceb7ec241ddc93ad1d';
+const JSONBIN_KEY = '$2a$10$Gi.k.77zA4oqHpM7hiWOPu.sz164TIhfB/m5M0o91k2DOfHCi08b6';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
 
-// ===================== STATE =====================
-let DB = { users:{}, classes:{}, schedule:{} };
-let GRADES = {};
-let LESSON_INFO = {};
-let ATTENDANCE = {};
-let currentUser = null;
-let selectedClass = null;
-let selectedDate = getTodayStr();
-let selectedSubject = null;
+// In-memory cache so UI doesn't lag
+let _dbCache = null;
 
-// ===================== JSONBIN API =====================
-async function binGet(id) {
-  const r = await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, {
-    headers:{'X-Master-Key':API_KEY}
-  });
-  const d = await r.json();
-  return d.record;
-}
-
-async function binSet(id, data) {
-  await fetch(`https://api.jsonbin.io/v3/b/${id}`, {
-    method:'PUT',
-    headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},
-    body:JSON.stringify(data)
-  });
-}
-
-// ===================== LOAD / SAVE =====================
-async function loadAll() {
-  showLoading('Loading school data...');
+async function dbRead() {
   try {
-    const school = await binGet(BIN_SCHOOL);
-    if (school && school.users) DB = school;
-  } catch(e){}
+    const r = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    const j = await r.json();
+    _dbCache = j.record;
+    return _dbCache;
+  } catch(e) {
+    console.error('JSONBin read error:', e);
+    return _dbCache || { tickets: {}, orders: [], events: [] };
+  }
+}
+
+async function dbWrite(data) {
+  _dbCache = data;
   try {
-    const g = await binGet(BIN_GRADES);
-    if (g && g.grades) { GRADES = g.grades; LESSON_INFO = g.lessonInfo||{}; }
-    else if (g && typeof g==='object') GRADES = g;
-  } catch(e){}
-  try {
-    const a = await binGet(BIN_ATT);
-    if (a && typeof a==='object' && !Array.isArray(a) && !a.type) ATTENDANCE = a;
-  } catch(e){}
-  // Init empty grade/att objects for classes
-  Object.keys(DB.classes||{}).forEach(cls => {
-    if (!GRADES[cls]) GRADES[cls] = {};
-    if (!ATTENDANCE[cls]) ATTENDANCE[cls] = {};
-    (DB.classes[cls]||[]).forEach(st => { if (!GRADES[cls][st]) GRADES[cls][st] = {}; });
+    await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(data)
+    });
+  } catch(e) {
+    console.error('JSONBin write error:', e);
+  }
+}
+
+// Legacy sync wrappers — կshxatum en async callers-ի hamar
+function loadRegistry() {
+  return (_dbCache && _dbCache.tickets) ? _dbCache.tickets : {};
+}
+function saveRegistry(reg) {
+  const data = _dbCache || { tickets: {}, orders: [], events: [] };
+  data.tickets = reg;
+  dbWrite(data);
+}
+let scannedLog = [];
+
+// =====================
+// ADMIN TABS
+// =====================
+function showAdminTab(tab) {
+  ['orders','events','scanner'].forEach(t => {
+    const el = document.getElementById('adminTab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+    const btn = document.getElementById('tab-' + t);
+    if (btn) {
+      btn.style.borderColor = t === tab ? 'var(--accent)' : 'var(--border)';
+      btn.style.color = t === tab ? 'var(--accent)' : 'var(--text-mid)';
+    }
   });
-  hideLoading();
+  if (tab === 'orders') renderAdmin();
+  if (tab === 'events') renderAdminEvents();
+  if (tab === 'scanner') { dbRead().then(() => renderScannedLog()); }
 }
 
-async function saveSchool() {
-  try { await binSet(BIN_SCHOOL, DB); } catch(e){}
-}
+// =====================
+// QR SCANNER
+// =====================
+async function scanTicket(rawInput) {
+  const raw = (rawInput || document.getElementById('scanInput').value || '').trim();
+  const resultEl = document.getElementById('scanResult');
+  if (!raw) return;
 
-async function saveGradesDB() {
-  try { await binSet(BIN_GRADES, {grades:GRADES, lessonInfo:LESSON_INFO}); } catch(e){}
-}
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">⏳ Ступում ем...</div>';
 
-async function saveAttDB() {
-  try { await binSet(BIN_ATT, ATTENDANCE); } catch(e){}
-}
+  // Extract TK-XXXXXX from QR data
+  const match = raw.match(/TK-\d{6}/);
+  const ticketId = match ? match[0] : raw;
 
-// ===================== UTILS =====================
-function getTodayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function dateToStr(d) {
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function formatDate(str) {
-  const d = new Date(str);
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${d.getDate()} ${months[d.getMonth()]}`;
-}
-function initials(name) {
-  return name.split(' ').map(w=>w[0]).join('').substring(0,2);
-}
-function showLoading(txt='Loading...') {
-  document.getElementById('loading-text').textContent=txt;
-  document.getElementById('loading-overlay').classList.remove('hidden');
-}
-function hideLoading() {
-  document.getElementById('loading-overlay').classList.add('hidden');
-}
-function flashSave() {
-  const f=document.getElementById('save-flash');
-  f.classList.add('show');
-  setTimeout(()=>f.classList.remove('show'),2000);
-}
-function getSubjects(user) {
-  const u = user||currentUser;
-  return (u.subject||'').split('&').map(s=>s.trim()).filter(Boolean);
-}
+  // Always read fresh from JSONBin
+  const db = await dbRead();
+  const reg = db.tickets || {};
+  const ticket = reg[ticketId] || reg[raw];
 
-// ===================== AUTH =====================
-let currentRole = 'teacher';
-function setRole(r) {
-  currentRole=r;
-  document.querySelectorAll('.role-tab').forEach((t,i)=>{
-    t.classList.toggle('active',['teacher','student','parent','admin'][i]===r);
-  });
-}
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('hy-AM', { hour: '2-digit', minute: '2-digit' });
 
-function doLogin() {
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value.trim();
-  const err = document.getElementById('login-error');
-
-  if (currentRole==='admin') {
-    if (p===ADMIN.pass) {
-      currentUser = {role:'admin',name:ADMIN.name,username:'admin'};
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('app-screen').classList.remove('hidden');
-      buildApp();
-    } else { err.textContent='Incorrect password'; }
+  if (!ticket) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+      <div style="background:rgba(255,107,107,0.08);border:2px solid var(--accent2);border-radius:12px;padding:20px;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">❌</div>
+        <div style="font-family:'Noto Serif Armenian',serif;font-size:18px;font-weight:700;color:var(--accent2);margin-bottom:8px">ԱՆՎԱՎԵՐ ՏՈՄՍ</div>
+        <div style="font-size:12px;color:var(--text-dim)">Այս կոդով տոմս չի գտնվել համակարգում</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-family:monospace">${raw}</div>
+      <button onclick="dismissResult()" style="margin-top:14px;width:100%;background:var(--accent2);border:none;color:#fff;padding:12px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">✕ Փаkел — nor scan</button>
+      </div>`;
+    scannedLog.unshift({ status: 'invalid', code: raw, time: timeStr });
+    document.getElementById('scanInput').value = '';
+    renderScannedLog();
     return;
   }
 
-  // Find user by username + role
-  const users = DB.users||{};
-  let found = null, foundKey = null;
-  for (const [key, val] of Object.entries(users)) {
-    const loginKey = key.replace(/_t$/,'').replace(/_s$/,'');
-    if (loginKey===u && val.role===currentRole && val.pass===p) {
-      found=val; foundKey=key; break;
-    }
-  }
-  if (!found) { err.textContent='Incorrect username, password, or role'; return; }
-  currentUser = {...found, username:foundKey};
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.remove('hidden');
-  buildApp();
-}
-
-function logout() {
-  currentUser=null;
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('login-screen').classList.remove('hidden');
-  document.getElementById('username').value='';
-  document.getElementById('password').value='';
-  document.getElementById('login-error').textContent='';
-}
-
-// ===================== APP =====================
-function buildApp() {
-  document.getElementById('sidebar-user').textContent=currentUser.name;
-  const roleLabel = {teacher:'TEACHER',student:'STUDENT',parent:'PARENT',admin:'ADMIN'};
-  document.getElementById('sidebar-role').textContent=roleLabel[currentUser.role]||'';
-
-  const nav=document.getElementById('sidebar-nav');
-  const main=document.getElementById('main-content');
-
-  if (currentUser.role==='admin') {
-    nav.innerHTML=`
-      <div class="nav-section">Overview</div>
-      <div class="nav-item active" onclick="showPage('admin-dashboard')" data-page="admin-dashboard"><span class="ni">📊</span> Dashboard</div>
-      <div class="nav-section">Manage</div>
-      <div class="nav-item" onclick="showPage('admin-teachers')" data-page="admin-teachers"><span class="ni">👨‍🏫</span> Teachers</div>
-      <div class="nav-item" onclick="showPage('admin-students')" data-page="admin-students"><span class="ni">👥</span> Students</div>
-      <div class="nav-item" onclick="showPage('admin-classes')" data-page="admin-classes"><span class="ni">🏫</span> Classes</div>
-      <div class="nav-item" onclick="showPage('admin-schedule')" data-page="admin-schedule"><span class="ni">📅</span> Schedule</div>
-    `;
-    main.innerHTML = buildAdminDashboard()+buildAdminTeachers()+buildAdminStudents()+buildAdminClasses()+buildAdminSchedule();
-    showPage('admin-dashboard');
-  } else if (currentUser.role==='teacher') {
-    selectedClass = (currentUser.classes||[])[0]||null;
-    selectedSubject = getSubjects()[0]||null;
-    nav.innerHTML=`
-      <div class="nav-section">Overview</div>
-      <div class="nav-item active" onclick="showPage('dashboard')" data-page="dashboard"><span class="ni">📊</span> Dashboard</div>
-      <div class="nav-section">Teaching</div>
-      <div class="nav-item" onclick="showPage('grades')" data-page="grades"><span class="ni">📝</span> Grades</div>
-      <div class="nav-item" onclick="showPage('attendance')" data-page="attendance"><span class="ni">📋</span> Attendance</div>
-      <div class="nav-section">Other</div>
-      <div class="nav-item" onclick="showPage('students')" data-page="students"><span class="ni">👥</span> Students</div>
-      <div class="nav-item" onclick="showPage('notify')" data-page="notify"><span class="ni">🔔</span> Notifications</div>
-    `;
-    main.innerHTML=buildDashboard()+buildGradesPage()+buildAttendancePage()+buildStudentsPage()+buildNotifyPage();
-    refreshGradesTable();
-    refreshAttTable();
-    showPage('dashboard');
-  } else {
-    nav.innerHTML=`
-      <div class="nav-section">Diary</div>
-      <div class="nav-item active" onclick="showPage('diary')" data-page="diary"><span class="ni">📖</span> My Diary</div>
-      <div class="nav-item" onclick="showPage('my-grades')" data-page="my-grades"><span class="ni">⭐</span> My Grades</div>
-    `;
-    main.innerHTML=buildDiaryPage()+buildMyGradesPage();
-    renderDiary();
-    renderMyGrades();
-    showPage('diary');
-  }
-}
-
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  // Rebuild dynamic pages
-  const rebuilds = {
-    'dashboard': ()=>{ const o=document.getElementById('page-dashboard'); if(o) o.outerHTML=buildDashboard(); },
-    'students':  ()=>{ const o=document.getElementById('page-students');  if(o) o.outerHTML=buildStudentsPage(); },
-    'notify':    ()=>{ const o=document.getElementById('page-notify');    if(o) o.outerHTML=buildNotifyPage(); },
-    'admin-dashboard': ()=>{ const o=document.getElementById('page-admin-dashboard'); if(o) o.outerHTML=buildAdminDashboard(); },
-    'admin-teachers':  ()=>{ const o=document.getElementById('page-admin-teachers');  if(o) o.outerHTML=buildAdminTeachers(); },
-    'admin-students':  ()=>{ const o=document.getElementById('page-admin-students');  if(o) o.outerHTML=buildAdminStudents(); },
-    'admin-classes':   ()=>{ const o=document.getElementById('page-admin-classes');   if(o) o.outerHTML=buildAdminClasses(); },
-    'admin-schedule':  ()=>{ const o=document.getElementById('page-admin-schedule');  if(o) o.outerHTML=buildAdminSchedule(); },
-  };
-  if (rebuilds[id]) rebuilds[id]();
-  const pg=document.getElementById('page-'+id);
-  if (pg) pg.classList.add('active');
-  document.querySelectorAll(`[data-page="${id}"]`).forEach(n=>n.classList.add('active'));
-}
-
-// ===================== TEACHER - DASHBOARD =====================
-function buildDashboard() {
-  const today=getTodayStr();
-  let absent=0;
-  (currentUser.classes||[]).forEach(cls=>{
-    if(ATTENDANCE[cls]&&ATTENDANCE[cls][today]) Object.values(ATTENDANCE[cls][today]).forEach(v=>{if(v==='absent')absent++;});
-  });
-  const total=(currentUser.classes||[]).reduce((s,cls)=>s+(DB.classes[cls]||[]).length,0);
-  return `<div class="page" id="page-dashboard">
-    <div class="page-title">Dashboard</div>
-    <div class="page-sub">${currentUser.name} &middot; ${currentUser.subject}</div>
-    <div class="stats-row">
-      <div class="stat-card accent"><div class="sc-label">My Classes</div><div class="sc-val">${(currentUser.classes||[]).length}</div><div class="sc-sub">${(currentUser.classes||[]).join(', ')}</div></div>
-      <div class="stat-card"><div class="sc-label">Total Students</div><div class="sc-val">${total}</div><div class="sc-sub">Across all classes</div></div>
-      <div class="stat-card red"><div class="sc-label">Absent Today</div><div class="sc-val">${absent}</div><div class="sc-sub">Students</div></div>
-    </div>
-    <div class="table-card">
-      <div class="table-header"><h3>My Classes</h3></div>
-      <table><thead><tr><th>Class</th><th>Students</th><th>Absent Today</th></tr></thead><tbody>
-        ${(currentUser.classes||[]).map(cls=>{
-          const sts=DB.classes[cls]||[];
-          const abs=ATTENDANCE[cls]&&ATTENDANCE[cls][today]?Object.values(ATTENDANCE[cls][today]).filter(v=>v==='absent').length:0;
-          return `<tr><td><b>${cls}</b></td><td>${sts.length} students</td><td>${abs>0?`<span class="badge badge-absent">${abs} absent</span>`:'<span class="badge badge-present">All present</span>'}</td></tr>`;
-        }).join('')}
-      </tbody></table>
-    </div>
-  </div>`;
-}
-
-// ===================== TEACHER - GRADES =====================
-function buildGradesPage() {
-  const subjects=getSubjects();
-  const subSel=subjects.length>1?`<label>Subject:</label>
-    <select id="grade-subject-select" onchange="selectedSubject=this.value;refreshGradesTable()">
-      ${subjects.map(s=>`<option value="${s}">${s}</option>`).join('')}
-    </select>`:'';
-  return `<div class="page" id="page-grades">
-    <div class="page-title">Grades</div>
-    <div class="page-sub">Enter grades per lesson</div>
-    <div class="select-row">
-      <label>Class:</label>
-      <select onchange="selectedClass=this.value;refreshGradesTable()">
-        ${(currentUser.classes||[]).map(c=>`<option value="${c}">${c}</option>`).join('')}
-      </select>
-      <label>Date:</label>
-      <input type="date" value="${getTodayStr()}" onchange="selectedDate=this.value;refreshGradesTable()" style="padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;outline:none;">
-      ${subSel}
-    </div>
-    <div class="table-card" style="margin-bottom:16px;">
-      <div class="table-header"><h3>Lesson Info</h3></div>
-      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <label style="font-size:13px;color:var(--text2);min-width:130px;">Topic covered:</label>
-          <input id="lesson-topic" style="flex:1;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;" placeholder="What was covered today...">
+  if (ticket.usedAt) {
+    const usedTime = ticket.usedAt;
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+      <div style="background:rgba(251,146,60,0.08);border:2px solid #fb923c;border-radius:12px;padding:20px;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">⚠️</div>
+        <div style="font-family:'Noto Serif Armenian',serif;font-size:18px;font-weight:700;color:#fb923c;margin-bottom:12px">ԱՐԴԵն ՕԳՏԱԳՈՐԾՎԱԾ</div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:left;font-size:12px;color:var(--text-mid)">
+          <div>🎭 ${ticket.eventName}</div>
+          <div>👤 ${ticket.buyer}</div>
+          <div>🪑 ${ticket.seats.join(', ')}</div>
+          <div style="color:#fb923c;margin-top:8px">⏰ Ստուգվել է ${usedTime}-ին</div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <label style="font-size:13px;color:var(--text2);min-width:130px;">Homework:</label>
-          <input id="lesson-homework" style="flex:1;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;" placeholder="Homework assignment...">
+      </div>`;
+    scannedLog.unshift({ status: 'used', code: raw, ticket, time: timeStr });
+    document.getElementById('scanInput').value = '';
+    renderScannedLog();
+    return;
+  }
+
+  // VALID — mark as used and persist to JSONBin
+  ticket.usedAt = timeStr;
+  reg[ticketId] = ticket;
+  saveRegistry(reg);
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = `
+    <div style="background:rgba(74,222,128,0.08);border:2px solid var(--success);border-radius:12px;padding:20px;text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <div style="font-family:'Noto Serif Armenian',serif;font-size:18px;font-weight:700;color:var(--success);margin-bottom:12px">ՎԱՎԵՐ ՏՈՄՍ</div>
+      <div style="background:var(--surface2);border-radius:8px;padding:14px;text-align:left;font-size:13px;color:var(--text)">
+        <div style="font-family:'Noto Serif Armenian',serif;font-weight:700;margin-bottom:8px">${ticket.eventName}</div>
+        <div style="color:var(--text-mid);font-size:12px">📅 ${ticket.date} · ${ticket.time}</div>
+        <div style="color:var(--text-mid);font-size:12px">📍 ${ticket.venue}</div>
+        <div style="color:var(--text-mid);font-size:12px">👤 ${ticket.buyer}</div>
+        <div style="color:var(--accent);font-size:12px;margin-top:6px">🪑 ${ticket.seats.join(', ')}</div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--success)">✓ Տոմsы nshvats e vorpes ogtagortsvats</div>
+      <button onclick="dismissResult()" style="margin-top:14px;width:100%;background:var(--success);border:none;color:#000;padding:12px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">✓ Հajord — nor scan</button>
+    </div>`;
+  if (scanLoop) { clearInterval(scanLoop); scanLoop = null; }
+  scannedLog.unshift({ status: 'valid', code: raw, ticket, time: timeStr });
+  document.getElementById('scanInput').value = '';
+  renderScannedLog();
+}
+
+function dismissResult() {
+  document.getElementById('scanResult').style.display = 'none';
+  // Restart scan loop if camera is still on
+  if (cameraStream && !scanLoop) startScanLoop();
+}
+
+function renderScannedLog() {
+  const el = document.getElementById('scannedList');
+  if (scannedLog.length === 0) {
+    el.innerHTML = `<div class="empty-state" style="padding:30px"><span class="empty-state-icon" style="font-size:36px">📭</span><div class="empty-state-text" style="font-size:14px">Դեռ ոչ մի տոմս չի ստուգվել</div></div>`;
+    return;
+  }
+  const colors = { valid: 'var(--success)', used: '#fb923c', invalid: 'var(--accent2)' };
+  const icons = { valid: '✅', used: '⚠️', invalid: '❌' };
+  const labels = { valid: 'Վավեր', used: 'Օգտ.', invalid: 'Անվավեր' };
+  el.innerHTML = scannedLog.slice(0, 20).map(s => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:20px">${icons[s.status]}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;color:${colors[s.status]};font-weight:600">${labels[s.status]}</div>
+        <div style="font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.ticket ? s.ticket.eventName + ' · ' + s.ticket.buyer : s.code}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);flex-shrink:0">${s.time}</div>
+    </div>
+  `).join('');
+}
+
+// =====================
+// ADMIN LOGIN
+// =====================
+function promptAdmin() {
+  const modal = document.getElementById('adminLoginModal');
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminPwError').style.display = 'none';
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+}
+
+function checkAdminLogin() {
+  const val = document.getElementById('adminPwInput').value;
+  if (val === ADMIN_PASSWORD) {
+    document.getElementById('adminLoginModal').classList.remove('show');
+    showPage('admin');
+  } else {
+    document.getElementById('adminPwError').style.display = 'block';
+    document.getElementById('adminPwInput').value = '';
+    document.getElementById('adminPwInput').focus();
+  }
+}
+
+function closeAdminModal() {
+  document.getElementById('adminLoginModal').classList.remove('show');
+}
+
+// =====================
+// PAGE NAVIGATION
+// =====================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (name === 'home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  if (name === 'mytickets') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+  if (name === 'admin') document.querySelectorAll('.nav-btn')[2].classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'home') renderEvents(events);
+  if (name === 'cart') renderCart();
+  if (name === 'checkout') renderCheckout();
+  if (name === 'admin') renderAdmin();
+  if (name === 'mytickets') renderMyTickets();
+}
+
+// =====================
+// EVENTS RENDERING
+// =====================
+function renderEvents(list) {
+  const grid = document.getElementById('eventsGrid');
+  document.getElementById('eventCount').textContent = `— ${list.length} հատ`;
+  if (list.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><span class="empty-state-icon">🔍</span><div class="empty-state-text">Ոչինչ չի գտնվել</div></div>';
+    return;
+  }
+  grid.innerHTML = list.map(e => `
+    <div class="event-card" onclick="openEvent(${e.id})">
+      <div class="event-card-image" style="background: linear-gradient(135deg, ${e.color}18, ${e.color}06)">
+        <span class="event-emoji">${e.emoji}</span>
+        <div class="event-tag">${e.category}</div>
+        ${e.badge ? `<div class="event-badge">${e.badge}</div>` : ''}
+      </div>
+      <div class="event-card-body">
+        <div class="event-name">${e.name}</div>
+        <div class="event-meta">
+          <div class="event-meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${e.date} · ${e.time}
+          </div>
+          <div class="event-meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${e.venue}
+          </div>
+          <div class="event-meta-item" style="color: ${e.available < 100 ? '#ff6b6b' : '#7a7890'}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            ${e.available} տոմս մնացել
+          </div>
+        </div>
+        <div class="event-card-footer">
+          <div class="event-price">
+            ${e.price.toLocaleString()}֏
+            <small>Standard-ից</small>
+          </div>
+          <button class="buy-btn" onclick="event.stopPropagation(); openEvent(${e.id})">Ամրագրել →</button>
         </div>
       </div>
     </div>
-    <div class="table-card">
-      <div class="table-header"><h3 id="grades-table-title">Grades</h3><button class="btn btn-primary" onclick="doSaveGrades()">✓ Save</button></div>
-      <div style="overflow-x:auto;"><table id="grades-table"></table></div>
-    </div>
-  </div>`;
+  `).join('');
 }
 
-function refreshGradesTable() {
-  const cls=selectedClass;
-  const date=selectedDate||getTodayStr();
-  if(!selectedSubject) selectedSubject=getSubjects()[0]||'';
-  const subj=selectedSubject;
-  const students=DB.classes[cls]||[];
-  const el=document.getElementById('grades-table-title');
-  if(el) el.textContent=`${cls} · ${subj} · ${formatDate(date)}`;
-  const li=LESSON_INFO[cls]&&LESSON_INFO[cls][subj]&&LESSON_INFO[cls][subj][date]?LESSON_INFO[cls][subj][date]:{};
-  const tEl=document.getElementById('lesson-topic');
-  const hEl=document.getElementById('lesson-homework');
-  if(tEl) tEl.value=li.topic||'';
-  if(hEl) hEl.value=li.homework||'';
-  const tbl=document.getElementById('grades-table');
-  if(!tbl) return;
-  tbl.innerHTML=`<thead><tr><th>Student</th><th>Grade (1-10)</th></tr></thead><tbody>
-    ${students.map((st,i)=>{
-      const g=GRADES[cls]&&GRADES[cls][st]&&GRADES[cls][st][subj]&&GRADES[cls][st][subj][date]?GRADES[cls][st][subj][date]:'';
-      return `<tr><td><div class="td-flex"><div class="avatar av-blue">${initials(st)}</div>${st}</div></td>
-        <td><input class="grade-input" type="number" min="1" max="10" value="${g}" id="gi-${i}" placeholder="—"></td></tr>`;
-    }).join('')}
-  </tbody>`;
+function filterEvents() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('categoryFilter').value;
+  const filtered = events.filter(e =>
+    e.name.toLowerCase().includes(q) &&
+    (cat === '' || e.category === cat)
+  );
+  renderEvents(filtered);
 }
 
-async function doSaveGrades() {
-  const cls=selectedClass;
-  const date=selectedDate||getTodayStr();
-  const subj=selectedSubject||getSubjects()[0]||'';
-  if(!GRADES[cls]) GRADES[cls]={};
-  (DB.classes[cls]||[]).forEach((st,i)=>{
-    const v=document.getElementById('gi-'+i)?.value;
-    if(v&&v>=1&&v<=10){
-      if(!GRADES[cls][st]) GRADES[cls][st]={};
-      if(!GRADES[cls][st][subj]) GRADES[cls][st][subj]={};
-      GRADES[cls][st][subj][date]=parseInt(v);
+// =====================
+// HALL / SEAT GENERATION
+// =====================
+function generateHall(eventId) {
+  // Get sold seats for this event
+  const soldSeats = soldSeatsByEvent[eventId] || new Set();
+  const rows = ['Ա','Բ','Գ','Դ','Ե','Զ','Է','Ը'];
+  const seatsPerRow = [8,10,10,10,10,10,8,6];
+  let html = '';
+  rows.forEach((row, ri) => {
+    html += `<div class="hall-row"><span class="row-label">${row}</span>`;
+    for (let s = 1; s <= seatsPerRow[ri]; s++) {
+      const seatId = `${row}${s}`;
+      const isOccupied = soldSeats.has(seatId);
+      const isVip = ri < 2;
+      const cls = isOccupied ? 'occupied' : (isVip ? 'vip' : 'available');
+      html += `<button class="seat ${cls}" data-seat="${seatId}" data-vip="${isVip}" onclick="toggleSeat(this, '${seatId}', ${isVip})" title="${row} ${s}"></button>`;
     }
+    html += `</div>`;
   });
-  const topic=document.getElementById('lesson-topic')?.value||'';
-  const hw=document.getElementById('lesson-homework')?.value||'';
-  if(!LESSON_INFO[cls]) LESSON_INFO[cls]={};
-  if(!LESSON_INFO[cls][subj]) LESSON_INFO[cls][subj]={};
-  LESSON_INFO[cls][subj][date]={topic,homework:hw};
-  await saveGradesDB();
-  flashSave();
+  return html;
 }
 
-// ===================== TEACHER - ATTENDANCE =====================
-function buildAttendancePage() {
-  return `<div class="page" id="page-attendance">
-    <div class="page-title">Attendance</div>
-    <div class="page-sub">Mark daily attendance</div>
-    <div class="select-row">
-      <label>Class:</label>
-      <select onchange="selectedClass=this.value;refreshAttTable()">
-        ${(currentUser.classes||[]).map(c=>`<option value="${c}">${c}</option>`).join('')}
-      </select>
-      <label>Date:</label>
-      <input type="date" value="${getTodayStr()}" onchange="selectedDate=this.value;refreshAttTable()" style="padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;outline:none;">
+function toggleSeat(btn, seatId, isVip) {
+  if (btn.classList.contains('occupied')) return;
+  if (btn.classList.contains('selected')) {
+    btn.classList.remove('selected');
+    btn.classList.add(isVip ? 'vip' : 'available');
+    selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+  } else {
+    btn.classList.add('selected');
+    selectedSeats.push({ id: seatId, isVip });
+  }
+  updateSeatInfo();
+}
+
+function updateSeatInfo() {
+  const info = document.getElementById('selectedSeatsInfo');
+  const addBtn = document.getElementById('addToCartBtn');
+  if (selectedSeats.length === 0) {
+    if (info) info.textContent = 'Ընտրեք տեղ(եր)ը դահլիճի քարտեզից';
+    if (addBtn) addBtn.disabled = true;
+    updatePriceBreakdown(0, 0);
+    return;
+  }
+  const vipCount = selectedSeats.filter(s => s.isVip).length;
+  const stdCount = selectedSeats.length - vipCount;
+  let parts = [];
+  if (stdCount > 0) parts.push(`${stdCount} Սtandard`);
+  if (vipCount > 0) parts.push(`${vipCount} VIP`);
+  if (info) info.innerHTML = `<strong style="color: var(--accent)">${selectedSeats.map(s=>s.id).join(', ')}</strong><br><span style="color:var(--text-dim);font-size:11px">${parts.join(', ')}</span>`;
+  if (addBtn) addBtn.disabled = false;
+
+  const e = currentEvent;
+  const total = stdCount * e.price + vipCount * e.vipPrice;
+  updatePriceBreakdown(total, selectedSeats.length);
+}
+
+function updatePriceBreakdown(total, count) {
+  const e = currentEvent;
+  if (!e) return;
+  const vipCount = selectedSeats.filter(s => s.isVip).length;
+  const stdCount = selectedSeats.length - vipCount;
+  let rows = '';
+  if (stdCount > 0) rows += `<div class="price-row"><span>Standard × ${stdCount}</span><span>${(stdCount * e.price).toLocaleString()}֏</span></div>`;
+  if (vipCount > 0) rows += `<div class="price-row"><span>VIP × ${vipCount}</span><span>${(vipCount * e.vipPrice).toLocaleString()}֏</span></div>`;
+  const service = Math.round(total * 0.05);
+  const pd = document.getElementById('priceBreakdown');
+  if (pd) pd.innerHTML = `
+    ${rows}
+    <div class="price-row"><span>Սպասարկման վճար (5%)</span><span>${service.toLocaleString()}֏</span></div>
+    <div class="price-total"><span>Ընդամենը</span><span style="color:var(--accent)">${(total + service).toLocaleString()}֏</span></div>
+  `;
+}
+
+// =====================
+// EVENT DETAIL
+// =====================
+function openEvent(id) {
+  currentEvent = events.find(e => e.id === id);
+  selectedSeats = [];
+  const e = currentEvent;
+
+  document.getElementById('detailContainer').innerHTML = `
+    <div>
+      <div class="detail-hero" style="background: linear-gradient(135deg, ${e.color}18, ${e.color}06)">
+        <span style="font-size:100px">${e.emoji}</span>
+      </div>
+      <div class="detail-title">${e.name}</div>
+      <div class="detail-tags">
+        <span class="dtag">${e.category}</span>
+        ${e.badge ? `<span class="dtag" style="border-color:rgba(255,107,107,0.4);color:#ff6b6b">${e.badge}</span>` : ''}
+      </div>
+      <div class="detail-info-grid">
+        <div class="info-box">
+          <div class="info-box-label">📅 Ամսաթիվ</div>
+          <div class="info-box-value">${e.date}</div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-label">🕐 Ժամ</div>
+          <div class="info-box-value">${e.time}</div>
+        </div>
+        <div class="info-box" style="grid-column: span 2">
+          <div class="info-box-label">📍 Վայր</div>
+          <div class="info-box-value">${e.venue}, ${e.city}</div>
+        </div>
+      </div>
+      <p class="detail-description">${e.description}</p>
     </div>
-    <div class="table-card">
-      <div class="table-header"><h3>Attendance</h3><button class="btn btn-primary" onclick="saveAttendance()">✓ Save</button></div>
-      <table id="att-table"></table>
+    <div>
+      <div class="seat-picker">
+        <div class="seat-picker-title">🪑 Ընտրեք Տեղ</div>
+        <div class="stage">🎭 ԲԵՄ / ԷԿՐԱՆ</div>
+        <div class="hall-container">
+          <div class="hall-rows" id="hallRows">${generateHall(e.id)}</div>
+        </div>
+        <div class="seat-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>Ազատ</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--surface2);border:1px solid rgba(107,197,255,0.4)"></div>VIP</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Ընտրված</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2a1f1f;opacity:0.5"></div>Զբաղված</div>
+        </div>
+        <div class="selected-seats-info" id="selectedSeatsInfo">Ընտրեք տեղ(եր)ը դահլիճի քարտեզից</div>
+        <div class="price-breakdown" id="priceBreakdown"></div>
+        <button class="add-cart-btn" id="addToCartBtn" onclick="addToCart()" disabled>
+          🛒 Ավելացնել Զամբյուղ
+        </button>
+      </div>
     </div>
-  </div>`;
+  `;
+
+  showPage('detail');
 }
 
-function refreshAttTable() {
-  const cls=selectedClass;
-  const date=selectedDate||getTodayStr();
-  const students=DB.classes[cls]||[];
-  if(!ATTENDANCE[cls]) ATTENDANCE[cls]={};
-  if(!ATTENDANCE[cls][date]) ATTENDANCE[cls][date]={};
-  const tbl=document.getElementById('att-table');
-  if(!tbl) return;
-  tbl.innerHTML=`<thead><tr><th>Student</th><th>Status</th></tr></thead><tbody>
-    ${students.map(st=>{
-      const att=ATTENDANCE[cls][date][st]||null;
-      const btn=(val,label,clr,txtclr)=>{
-        const active=att===val;
-        const s=active?`background:rgba(${clr},0.15);color:${txtclr};border:1px solid rgba(${clr},0.3);`:`background:var(--surface2);color:var(--text2);border:1px solid var(--border);`;
-        return `<button class="att-btn" onclick="setAtt('${cls}','${date}','${st}','${val}')" style="${s}">${label}</button>`;
-      };
-      return `<tr><td><div class="td-flex"><div class="avatar av-blue">${initials(st)}</div>${st}</div></td>
-        <td>${btn('present','Present','34,197,94','#4ade80')}${btn('absent','Absent','239,68,68','#f87171')}${btn('late','Late','245,158,11','#fbbf24')}</td></tr>`;
-    }).join('')}
-  </tbody>`;
+// =====================
+// CART
+// =====================
+function addToCart() {
+  if (selectedSeats.length === 0) return;
+  const e = currentEvent;
+  const vipCount = selectedSeats.filter(s => s.isVip).length;
+  const stdCount = selectedSeats.length - vipCount;
+  const total = stdCount * e.price + vipCount * e.vipPrice;
+  const service = Math.round(total * 0.05);
+
+  cart.push({
+    id: Date.now(),
+    event: e,
+    seats: [...selectedSeats],
+    total: total + service
+  });
+
+  document.getElementById('cartCount').textContent = cart.length;
+  showToast('✓', `"${e.name}" ավելացվեց զամբյուղ`);
+  showPage('home');
 }
 
-async function setAtt(cls,date,st,val) {
-  if(!ATTENDANCE[cls]) ATTENDANCE[cls]={};
-  if(!ATTENDANCE[cls][date]) ATTENDANCE[cls][date]={};
-  ATTENDANCE[cls][date][st]=val;
-  refreshAttTable();
-  flashSave();
+function renderCart() {
+  const content = document.getElementById('cartContent');
+  if (cart.length === 0) {
+    content.innerHTML = `<div class="empty-state"><span class="empty-state-icon">🛒</span><div class="empty-state-text">Զամբյուղը դատարկ է</div><br><button class="buy-btn" onclick="showPage('home')" style="margin-top:16px">Ընտրել Տոմս →</button></div>`;
+    return;
+  }
+
+  const totalAll = cart.reduce((a, b) => a + b.total, 0);
+
+  content.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-icon">${item.event.emoji}</div>
+      <div class="cart-item-body">
+        <div class="cart-item-name">${item.event.name}</div>
+        <div class="cart-item-detail">📅 ${item.event.date} · ${item.event.time}</div>
+        <div class="cart-item-detail">📍 ${item.event.venue}</div>
+        <div class="cart-item-seats">
+          ${item.seats.map(s => `<span class="seat-chip">${s.id}${s.isVip ? ' VIP' : ''}</span>`).join('')}
+        </div>
+      </div>
+      <div class="cart-item-right">
+        <div class="cart-item-price">${item.total.toLocaleString()}֏</div>
+        <button class="remove-btn" onclick="removeFromCart(${item.id})">✕ Հեռացնել</button>
+      </div>
+    </div>
+  `).join('') + `
+    <div class="cart-summary">
+      <div class="cart-summary-title">Ամփոփում</div>
+      <div class="summary-row"><span>Տոմսեր (${cart.length} հատ)</span><span>${cart.reduce((a,b) => a+b.total, 0).toLocaleString()}֏</span></div>
+      <div class="summary-total"><span>Ընդամենը</span><span style="color:var(--accent)">${totalAll.toLocaleString()}֏</span></div>
+      <button class="checkout-btn" onclick="showPage('checkout')">Անցնել Վճարման →</button>
+    </div>
+  `;
 }
 
-async function saveAttendance() {
-  await saveAttDB();
-  flashSave();
+function removeFromCart(id) {
+  cart = cart.filter(item => item.id !== id);
+  document.getElementById('cartCount').textContent = cart.length;
+  renderCart();
 }
 
-// ===================== TEACHER - STUDENTS =====================
-function buildStudentsPage() {
-  return `<div class="page" id="page-students">
-    <div class="page-title">Students</div>
-    <div class="page-sub">Students in my classes</div>
-    ${(currentUser.classes||[]).map(cls=>`
-      <div class="table-card">
-        <div class="table-header"><h3>${cls} — ${(DB.classes[cls]||[]).length} students</h3></div>
-        <table><thead><tr><th>Student</th><th>Today</th></tr></thead><tbody>
-          ${(DB.classes[cls]||[]).map(st=>{
-            const att=ATTENDANCE[cls]&&ATTENDANCE[cls][getTodayStr()]?ATTENDANCE[cls][getTodayStr()][st]:null;
-            return `<tr><td><div class="td-flex"><div class="avatar av-purple">${initials(st)}</div>${st}</div></td>
-              <td>${att?`<span class="badge badge-${att}">${att==='present'?'Present':att==='absent'?'Absent':'Late'}</span>`:'<span style="color:var(--text3);font-size:12px;">—</span>'}</td></tr>`;
-          }).join('')}
-        </tbody></table>
-      </div>`).join('')}
-  </div>`;
+// =====================
+// CHECKOUT
+// =====================
+function renderCheckout() {
+  const totalAll = cart.reduce((a, b) => a + b.total, 0);
+  document.getElementById('orderSummary').innerHTML = `
+    <div class="cart-summary-title">📋 Ամփոփ Պատվեր</div>
+    ${cart.map(item => `
+      <div class="order-item">
+        <div class="order-item-icon">${item.event.emoji}</div>
+        <div class="order-item-details">
+          <div class="order-item-name">${item.event.name}</div>
+          <div class="order-item-sub">${item.seats.map(s=>s.id).join(', ')}</div>
+        </div>
+        <div class="order-item-price">${item.total.toLocaleString()}֏</div>
+      </div>
+    `).join('')}
+    <div class="price-breakdown" style="margin-top:16px">
+      <div class="price-total"><span>Ընդամենը</span><span style="color:var(--accent)">${totalAll.toLocaleString()}֏</span></div>
+    </div>
+  `;
 }
 
-// ===================== TEACHER - NOTIFICATIONS =====================
-function buildNotifyPage() {
-  const today=getTodayStr();
-  let notifs=[];
-  (currentUser.classes||[]).forEach(cls=>{
-    const att=ATTENDANCE[cls]&&ATTENDANCE[cls][today]?ATTENDANCE[cls][today]:{};
-    Object.entries(att).forEach(([st,v])=>{
-      if(v==='absent') notifs.push({color:'var(--red)',text:`${st} was absent today.`,time:'Today'});
-      if(v==='late') notifs.push({color:'var(--amber)',text:`${st} arrived late.`,time:'Today'});
+function selectPayment(el) {
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function completeOrder() {
+  const fn = document.getElementById('firstName').value;
+  const ln = document.getElementById('lastName').value;
+  const email = document.getElementById('email').value;
+  if (!fn || !ln || !email) {
+    showToast('⚠️', 'Լրացրեք բոլոր պարտադիր դաշտերը');
+    return;
+  }
+  showQRModal(fn, ln);
+}
+
+// =====================
+// QR MODAL
+// =====================
+function generateQRSvg(text) {
+  // Google Charts API — 100% scannable, ոչ մի library պետq չէ
+  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=' + encodeURIComponent(text);
+  return `<img src="${url}" width="200" height="200" style="display:block;border-radius:4px" alt="QR">`;
+}
+
+function renderAllQRCodes() {
+  // No longer needed — img src-ը ուղղակի load eлinum e
+}
+
+function showQRModal(fn, ln) {
+  const orderId = 'TK-' + String(Date.now()).slice(-6);
+  const content = document.getElementById('qrModalContent');
+  const firstItem = cart[0];
+
+  // Mark seats as sold
+  cart.forEach(item => {
+    const eid = item.event.id;
+    if (!soldSeatsByEvent[eid]) soldSeatsByEvent[eid] = new Set();
+    item.seats.forEach(s => soldSeatsByEvent[eid].add(s.id));
+  });
+
+  // Store ticket for verification
+  // Save to JSONBin so any device can verify
+  const reg = loadRegistry();
+  cart.forEach(item => {
+    reg[orderId] = {
+      orderId,
+      eventName: item.event.name,
+      buyer: `${fn} ${ln}`,
+      date: item.event.date,
+      time: item.event.time,
+      venue: item.event.venue,
+      seats: item.seats.map(s => s.id + (s.isVip ? ' VIP' : '')),
+      amount: item.total.toLocaleString() + '֏',
+      issuedAt: new Date().toLocaleString('hy-AM'),
+      usedAt: null
+    };
+  });
+  saveRegistry(reg);
+
+  // Save to My Tickets (localStorage)
+  const myTickets = loadMyTickets();
+  cart.forEach(item => {
+    myTickets.push({
+      orderId,
+      eventName: item.event.name,
+      category: item.event.category,
+      emoji: item.event.emoji,
+      date: item.event.date,
+      time: item.event.time,
+      venue: item.event.venue,
+      seats: item.seats.map(s => s.id + (s.isVip ? ' VIP' : '')),
+      buyer: `${fn} ${ln}`,
+      amount: item.total.toLocaleString() + '֏',
+      issuedAt: new Date().toLocaleString('hy-AM'),
     });
   });
-  if(!notifs.length) notifs.push({color:'var(--green)',text:'No notifications. All students present.',time:''});
-  return `<div class="page" id="page-notify">
-    <div class="page-title">Notifications</div>
-    <div class="page-sub">Automatic parent notifications</div>
-    ${notifs.map(n=>`<div class="notif"><div class="notif-dot" style="background:${n.color}"></div>
-      <div><div class="notif-text">${n.text}</div>${n.time?`<div class="notif-time">${n.time}</div>`:''}</div></div>`).join('')}
-  </div>`;
-}
+  saveMyTickets(myTickets);
+  updateMyTicketsBadge();
 
-// ===================== STUDENT/PARENT - DIARY =====================
-function buildDiaryPage() {
-  const now=new Date();
-  const opts=[];
-  for(let i=0;i<12;i++){
-    const y=now.getFullYear(), m=i;
-    const val=`${y}-${String(i+1).padStart(2,'0')}`;
-    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    opts.push(`<option value="${val}" ${i===now.getMonth()?'selected':''}>${months[i]} ${y}</option>`);
-  }
-  return `<div class="page" id="page-diary">
-    <div class="page-title">📖 My Diary</div>
-    <div class="page-sub" id="diary-sub"></div>
-    <div class="select-row" style="margin-bottom:24px;">
-      <label>Month:</label>
-      <select id="diary-month-select" onchange="renderDiaryMonth()">${opts.join('')}</select>
-    </div>
-    <div id="diary-content"></div>
-  </div>`;
-}
-
-function renderDiary() {
-  const studentName=currentUser.role==='parent'?currentUser.studentName:currentUser.name;
-  const cls=currentUser.role==='parent'?currentUser.studentClass:currentUser.class;
-  document.getElementById('diary-sub').textContent=`${studentName} · Class ${cls}`;
-  window._diaryStudent=studentName;
-  window._diaryCls=cls;
-  renderDiaryMonth();
-}
-
-function renderDiaryMonth() {
-  const cls=window._diaryCls;
-  const studentName=window._diaryStudent;
-  const val=document.getElementById('diary-month-select').value;
-  const [year,month]=val.split('-').map(Number);
-  const allDays=[];
-  const d=new Date(year,month-1,1);
-  while(d.getMonth()===month-1){
-    if(d.getDay()>=1&&d.getDay()<=5) allDays.push(new Date(d));
-    d.setDate(d.getDate()+1);
-  }
-  const weeks=[];
-  let week=[];
-  allDays.forEach(day=>{
-    if(day.getDay()===1&&week.length>0){weeks.push(week);week=[];}
-    week.push(day);
+  // Add to admin
+  adminOrders.unshift({
+    id: `#${orderId}`,
+    event: firstItem ? firstItem.event.name : 'Ապրանք',
+    buyer: `${fn} ${ln}`,
+    date: 'Հիմա',
+    amount: cart.reduce((a,b)=>a+b.total,0).toLocaleString() + '֏',
+    status: 'success'
   });
-  if(week.length>0) weeks.push(week);
 
-  const dayKeyMap={1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri'};
-  const dayNames=['Monday','Tuesday','Wednesday','Thursday','Friday'];
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  document.getElementById('diary-content').innerHTML=weeks.map((wk,wi)=>{
-    const wStart=wk[0],wEnd=wk[wk.length-1];
-    const weekLabel=`${wStart.getDate()}.${String(wStart.getMonth()+1).padStart(2,'0')}.${wStart.getFullYear()} – ${wEnd.getDate()}.${String(wEnd.getMonth()+1).padStart(2,'0')}.${wEnd.getFullYear()}`;
-    const daysHtml=wk.map(day=>{
-      const dateStr=dateToStr(day);
-      const dk=dayKeyMap[day.getDay()];
-      const schedule=(DB.schedule[cls]&&DB.schedule[cls][dk])||[];
-      const att=ATTENDANCE[cls]&&ATTENDANCE[cls][dateStr]?ATTENDANCE[cls][dateStr][studentName]:null;
-      return `<div style="margin-bottom:14px;">
-        <div class="diary-day-header">
-          <span>${dayNames[day.getDay()-1]}, ${day.getDate()} ${months[day.getMonth()]}</span>
-          ${att?`<span class="badge badge-${att}">${att==='present'?'Present':att==='absent'?'Absent':'Late'}</span>`:''}
-        </div>
-        <table style="width:100%;border-collapse:collapse;">
-          <thead><tr>
-            <th style="padding:4px 10px;font-size:10px;color:var(--text3);font-weight:500;width:28px;">#</th>
-            <th style="padding:4px 10px;font-size:10px;color:var(--text3);font-weight:500;">Subject</th>
-            <th style="padding:4px 10px;text-align:center;font-size:10px;color:var(--text3);font-weight:500;">Grade</th>
-          </tr></thead>
-          <tbody>
-            ${schedule.length?schedule.map((lesson,i)=>{
-              const g=GRADES[cls]&&GRADES[cls][studentName]&&GRADES[cls][studentName][lesson.sub]?GRADES[cls][studentName][lesson.sub][dateStr]:'';
-              const info=LESSON_INFO[cls]&&LESSON_INFO[cls][lesson.sub]&&LESSON_INFO[cls][lesson.sub][dateStr]?LESSON_INFO[cls][lesson.sub][dateStr]:{};
-              return `<tr style="${i%2===0?'background:var(--surface2)':''}">
-                <td style="padding:5px 10px;font-size:11px;color:var(--text3);">${i+1}</td>
-                <td style="padding:5px 10px;">
-                  <div style="font-size:13px;font-weight:500;">${lesson.sub}</div>
-                  ${info.topic?`<div style="font-size:11px;color:var(--text2);margin-top:1px;">📖 ${info.topic}</div>`:''}
-                  ${info.homework?`<div style="font-size:11px;color:var(--amber);margin-top:1px;">✏️ ${info.homework}</div>`:''}
-                </td>
-                <td style="padding:5px 10px;text-align:center;">${g?`<span class="badge badge-${g}">${g}</span>`:'<span style="color:var(--text3);font-size:12px;">—</span>'}</td>
-              </tr>`;
-            }).join(''):`<tr><td colspan="3" style="padding:12px 10px;font-size:12px;color:var(--text3);text-align:center;">No lessons scheduled</td></tr>`}
-          </tbody>
-        </table>
-      </div>`;
-    }).join('');
-    return `<div class="table-card" style="margin-bottom:20px;">
-      <div class="table-header"><h3>Week ${wi+1} <span style="font-weight:400;color:var(--text2);font-size:13px;">${weekLabel}</span></h3></div>
-      <div style="padding:16px 20px;">${daysHtml}</div>
-    </div>`;
-  }).join('');
+  content.innerHTML = `
+    <span class="modal-success-icon">🎉</span>
+    <div class="modal-title">Վճարումն Ավարտված Է!</div>
+    <p class="modal-sub">Ձեր տոմս(եր)ը հաջողությամբ ձևակերպված են: QR կոդը ցույց տվեք մուտքի մոտ:</p>
+    <div class="qr-wrapper">
+      ${generateQRSvg(orderId)}
+    </div>
+    <div class="ticket-card">
+      <div class="ticket-card-name">${firstItem ? firstItem.event.name : 'Տոմս'}</div>
+      <div class="ticket-detail">📅 ${firstItem ? firstItem.event.date : ''} · ${firstItem ? firstItem.event.time : ''}</div>
+      <div class="ticket-detail">📍 ${firstItem ? firstItem.event.venue : ''}</div>
+      <div class="ticket-detail">🪑 ${firstItem ? firstItem.seats.map(s=>s.id).join(', ') : ''}</div>
+      <div class="ticket-detail">👤 ${fn} ${ln}</div>
+      <div class="ticket-id">${orderId}</div>
+    </div>
+    <button class="modal-close-btn" onclick="closeQRModal()">✓ Փակել</button>
+  `;
+  document.getElementById('qrModal').classList.add('show');
+  setTimeout(renderAllQRCodes, 50);
 }
 
-function buildMyGradesPage() {
-  return `<div class="page" id="page-my-grades">
-    <div class="page-title">⭐ My Grades</div>
-    <div class="page-sub">Academic year overview</div>
-    <div id="my-grades-content"></div>
-  </div>`;
+function closeQRModal() {
+  document.getElementById('qrModal').classList.remove('show');
+  cart = [];
+  document.getElementById('cartCount').textContent = 0;
+  showPage('home');
 }
 
-function renderMyGrades() {
-  const studentName=currentUser.role==='parent'?currentUser.studentName:currentUser.name;
-  const cls=currentUser.role==='parent'?currentUser.studentClass:currentUser.class;
-  const subjectGrades=GRADES[cls]&&GRADES[cls][studentName]?GRADES[cls][studentName]:{};
-  if(!Object.keys(subjectGrades).length){
-    document.getElementById('my-grades-content').innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);">No grades recorded yet.</div>';
+// =====================
+// ADMIN
+// =====================
+function renderAdmin() {
+  const totalRevenue = adminOrders.reduce((a, o) => a + parseInt(o.amount.replace(/[^\d]/g,'')||'0'), 0);
+  document.getElementById('adminStats').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${adminOrders.length}</div><div class="stat-label">Ընդամենը Պատվեր</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--accent3)">${events.length}</div><div class="stat-label">Ակտիվ Իրադ.</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--success)">${adminOrders.filter(o=>o.status==='success').length}</div><div class="stat-label">Հաջող Վճ.</div></div>
+    <div class="stat-card"><div class="stat-value" style="font-size:22px">${totalRevenue.toLocaleString()}֏</div><div class="stat-label">Ընդ. Եկամուտ</div></div>
+  `;
+  if (adminOrders.length === 0) {
+    document.getElementById('adminOrders').innerHTML = `<div class="empty-state" style="padding:40px"><span class="empty-state-icon">📋</span><div class="empty-state-text">Դեռ պատվեր չկա</div></div>`;
     return;
   }
-  const rows=Object.entries(subjectGrades).map(([subj,dates])=>{
-    const vals=Object.values(dates);
-    const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):'—';
-    const entries=Object.entries(dates).map(([d,g])=>`<span style="font-size:11px;color:var(--text2);margin-right:8px;">${formatDate(d)}: <span class="badge badge-${g}">${g}</span></span>`).join('');
-    return `<tr><td>${subj}</td><td>${entries}</td><td><span class="badge badge-${Math.round(parseFloat(avg))}">${avg}</span></td></tr>`;
-  }).join('');
-  document.getElementById('my-grades-content').innerHTML=`<div class="table-card"><table>
-    <thead><tr><th>Subject</th><th>Grades</th><th>Average</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
-}
-
-// ===================== ADMIN - DASHBOARD =====================
-function buildAdminDashboard() {
-  const teachers=Object.values(DB.users||{}).filter(u=>u.role==='teacher');
-  const students=Object.values(DB.users||{}).filter(u=>u.role==='student');
-  const classes=Object.keys(DB.classes||{});
-  return `<div class="page" id="page-admin-dashboard">
-    <div class="page-title">Admin Dashboard</div>
-    <div class="page-sub">School overview</div>
-    <div class="stats-row">
-      <div class="stat-card accent"><div class="sc-label">Teachers</div><div class="sc-val">${teachers.length}</div></div>
-      <div class="stat-card"><div class="sc-label">Students</div><div class="sc-val">${students.length}</div></div>
-      <div class="stat-card"><div class="sc-label">Classes</div><div class="sc-val">${classes.length}</div></div>
+  document.getElementById('adminOrders').innerHTML = adminOrders.map(o => `
+    <div class="admin-table-row">
+      <div class="col-id">${o.id}</div>
+      <div class="col-event">${o.event}</div>
+      <div class="col-buyer">${o.buyer}</div>
+      <div class="col-date">${o.date}</div>
+      <div class="col-amount">${o.amount}</div>
+      <div class="col-status"><span class="status-badge status-${o.status}">${o.status === 'success' ? '✓ Հաջող' : '⏳ Սպաս'}</span></div>
     </div>
-    <div class="table-card">
-      <div class="table-header"><h3>Teachers</h3></div>
-      <table><thead><tr><th>Name</th><th>Subject</th><th>Classes</th></tr></thead><tbody>
-        ${teachers.map(t=>`<tr>
-          <td><div class="td-flex"><div class="avatar av-blue">${initials(t.name)}</div>${t.name}</div></td>
-          <td>${t.subject||'—'}</td>
-          <td>${(t.classes||[]).join(', ')||'—'}</td>
-        </tr>`).join('')}
-      </tbody></table>
-    </div>
-  </div>`;
+  `).join('');
 }
 
-// ===================== ADMIN - TEACHERS =====================
-function buildAdminTeachers() {
-  const teachers=Object.entries(DB.users||{}).filter(([k,v])=>v.role==='teacher');
-  return `<div class="page" id="page-admin-teachers">
-    <div class="page-title">Teachers</div>
-    <div class="page-sub">Add or edit teachers</div>
-    <div class="form-card">
-      <h3>Add New Teacher</h3>
-      <div class="form-row">
-        <div class="form-field"><label>Full Name</label><input id="t-name" placeholder="Ani Hakobyan"></div>
-        <div class="form-field"><label>Username</label><input id="t-user" placeholder="ani.hakobyan@school.am"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-field"><label>Password</label><input id="t-pass" placeholder="Password"></div>
-        <div class="form-field"><label>Subject(s) — use & for multiple</label><input id="t-subj" placeholder="Mathematics & Physics"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-field"><label>Classes (comma separated)</label><input id="t-cls" placeholder="10A, 10B, 9A"></div>
-      </div>
-      <button class="btn btn-primary" onclick="addTeacher()">+ Add Teacher</button>
-    </div>
-    <div class="table-card">
-      <div class="table-header"><h3>All Teachers (${teachers.length})</h3></div>
-      <table><thead><tr><th>Name</th><th>Username</th><th>Subject</th><th>Classes</th><th></th></tr></thead><tbody>
-        ${teachers.map(([key,t])=>`<tr id="trow-${key}">
-          <td><div class="td-flex"><div class="avatar av-blue">${initials(t.name)}</div>
-            <span id="t-disp-name-${key}">${t.name}</span>
-          </div></td>
-          <td style="font-size:12px;color:var(--text2);">${key.replace(/_t$/,'')}</td>
-          <td id="t-disp-subj-${key}">${t.subject||'—'}</td>
-          <td id="t-disp-cls-${key}">${(t.classes||[]).join(', ')||'—'}</td>
-          <td style="display:flex;gap:6px;">
-            <button class="btn btn-ghost" onclick="editTeacherRow('${key}')">Edit</button>
-            <button class="btn btn-danger" onclick="removeUser('${key}')">Remove</button>
-          </td>
-        </tr>
-        <tr id="trow-edit-${key}" style="display:none;background:var(--surface2);">
-          <td colspan="5" style="padding:14px 16px;">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px;">
-              <div><label style="font-size:11px;color:var(--text2);">Full Name</label><input id="te-name-${key}" value="${t.name}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;"></div>
-              <div><label style="font-size:11px;color:var(--text2);">Password</label><input id="te-pass-${key}" value="${t.pass}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;"></div>
-              <div><label style="font-size:11px;color:var(--text2);">Subject(s)</label><input id="te-subj-${key}" value="${t.subject||''}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;"></div>
-              <div><label style="font-size:11px;color:var(--text2);">Classes (comma separated)</label><input id="te-cls-${key}" value="${(t.classes||[]).join(', ')}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;"></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary" onclick="saveTeacherEdit('${key}')">✓ Save</button>
-              <button class="btn btn-ghost" onclick="cancelTeacherEdit('${key}')">Cancel</button>
-            </div>
-          </td>
-        </tr>`).join('')}
-      </tbody></table>
-    </div>
-  </div>`;
+// =====================
+// TOAST
+// =====================
+function showToast(icon, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-function editTeacherRow(key) {
-  document.getElementById('trow-edit-'+key).style.display='';
-}
-function cancelTeacherEdit(key) {
-  document.getElementById('trow-edit-'+key).style.display='none';
-}
-async function saveTeacherEdit(key) {
-  const name=document.getElementById('te-name-'+key).value.trim();
-  const pass=document.getElementById('te-pass-'+key).value.trim();
-  const subj=document.getElementById('te-subj-'+key).value.trim();
-  const cls=document.getElementById('te-cls-'+key).value.split(',').map(s=>s.trim()).filter(Boolean);
-  if(!name||!pass){alert('Name and password required.');return;}
-  DB.users[key]={...DB.users[key],name,pass,subject:subj,classes:cls};
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-teachers');
+// =====================
+// MY TICKETS (localStorage)
+// =====================
+const LS_KEY = 'bilet_my_tickets';
+
+function loadMyTickets() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch(e) { return []; }
 }
 
-async function addTeacher() {
-  const name=document.getElementById('t-name').value.trim();
-  const user=document.getElementById('t-user').value.trim();
-  const pass=document.getElementById('t-pass').value.trim();
-  const subj=document.getElementById('t-subj').value.trim();
-  const cls=document.getElementById('t-cls').value.split(',').map(s=>s.trim()).filter(Boolean);
-  if(!name||!user||!pass){alert('Name, username, and password are required.');return;}
-  const key=user+'_t';
-  if(!DB.users) DB.users={};
-  DB.users[key]={role:'teacher',name,pass,subject:subj,classes:cls};
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-teachers');
+function saveMyTickets(tickets) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(tickets)); } catch(e) {}
 }
 
-async function removeUser(key) {
-  if(!confirm('Are you sure?')) return;
-  delete DB.users[key];
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage(currentUser.role==='admin'?'admin-teachers':'admin-students');
-}
-
-// ===================== ADMIN - STUDENTS =====================
-function buildAdminStudents() {
-  const students=Object.entries(DB.users||{}).filter(([k,v])=>v.role==='student');
-  const classOpts=Object.keys(DB.classes||{}).map(c=>`<option value="${c}">${c}</option>`).join('');
-  return `<div class="page" id="page-admin-students">
-    <div class="page-title">Students</div>
-    <div class="page-sub">Add or edit student accounts</div>
-    <div class="form-card">
-      <h3>Add New Student Account</h3>
-      <div class="form-row">
-        <div class="form-field"><label>Full Name</label><input id="s-name" placeholder="Ani Hakobyan"></div>
-        <div class="form-field"><label>Username</label><input id="s-user" placeholder="ani.hakobyan"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-field"><label>Password</label><input id="s-pass" placeholder="Password"></div>
-        <div class="form-field"><label>Class</label><select id="s-cls">${classOpts}</select></div>
-      </div>
-      <button class="btn btn-primary" onclick="addStudent()">+ Add Student</button>
-    </div>
-    <div class="table-card">
-      <div class="table-header"><h3>Student Accounts (${students.length})</h3></div>
-      <table><thead><tr><th>Name</th><th>Username</th><th>Class</th><th></th></tr></thead><tbody>
-        ${students.map(([key,s])=>`<tr id="srow-${key}">
-          <td><div class="td-flex"><div class="avatar av-purple">${initials(s.name)}</div>${s.name}</div></td>
-          <td style="font-size:12px;color:var(--text2);">${key}</td>
-          <td>${s.class||'—'}</td>
-          <td style="display:flex;gap:6px;">
-            <button class="btn btn-ghost" onclick="editStudentRow('${key}')">Edit</button>
-            <button class="btn btn-danger" onclick="removeUser('${key}')">Remove</button>
-          </td>
-        </tr>
-        <tr id="srow-edit-${key}" style="display:none;background:var(--surface2);">
-          <td colspan="4" style="padding:14px 16px;">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px;">
-              <div><label style="font-size:11px;color:var(--text2);">Full Name</label><input id="se-name-${key}" value="${s.name}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;"></div>
-              <div><label style="font-size:11px;color:var(--text2);">Password</label><input id="se-pass-${key}" value="${s.pass}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;"></div>
-              <div><label style="font-size:11px;color:var(--text2);">Class</label><select id="se-cls-${key}" style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:4px;">${Object.keys(DB.classes||{}).map(c=>`<option value="${c}" ${s.class===c?'selected':''}>${c}</option>`).join('')}</select></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary" onclick="saveStudentEdit('${key}')">✓ Save</button>
-              <button class="btn btn-ghost" onclick="cancelStudentEdit('${key}')">Cancel</button>
-            </div>
-          </td>
-        </tr>`).join('')}
-      </tbody></table>
-    </div>
-  </div>`;
-}
-
-function editStudentRow(key) {
-  document.getElementById('srow-edit-'+key).style.display='';
-}
-function cancelStudentEdit(key) {
-  document.getElementById('srow-edit-'+key).style.display='none';
-}
-async function saveStudentEdit(key) {
-  const name=document.getElementById('se-name-'+key).value.trim();
-  const pass=document.getElementById('se-pass-'+key).value.trim();
-  const cls=document.getElementById('se-cls-'+key).value;
-  if(!name||!pass){alert('Name and password required.');return;}
-  DB.users[key]={...DB.users[key],name,pass,class:cls};
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-students');
-}
-
-async function addStudent() {
-  const name=document.getElementById('s-name').value.trim();
-  const user=document.getElementById('s-user').value.trim();
-  const pass=document.getElementById('s-pass').value.trim();
-  const cls=document.getElementById('s-cls').value;
-  if(!name||!user||!pass){alert('All fields required.');return;}
-  if(!DB.users) DB.users={};
-  DB.users[user]={role:'student',name,pass,class:cls};
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-students');
-}
-
-// ===================== ADMIN - CLASSES =====================
-function buildAdminClasses() {
-  return `<div class="page" id="page-admin-classes">
-    <div class="page-title">Classes</div>
-    <div class="page-sub">Manage class rosters — drag students to reorder</div>
-    <div class="form-card">
-      <h3>Add New Class</h3>
-      <div class="form-row">
-        <div class="form-field"><label>Class Name</label><input id="cls-name" placeholder="10A"></div>
-      </div>
-      <button class="btn btn-primary" onclick="addClass()">+ Add Class</button>
-    </div>
-    ${Object.entries(DB.classes||{}).map(([cls,students])=>`
-      <div class="table-card" style="margin-bottom:20px;">
-        <div class="table-header">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span id="cls-title-${cls}" style="font-size:14px;font-weight:600;">${cls} — ${students.length} students</span>
-            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="toggleClassRename('${cls}')">Rename</button>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <input id="new-st-${cls}" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:inherit;outline:none;width:160px;" placeholder="Student full name">
-            <button class="btn btn-primary" onclick="addStudentToClass('${cls}')">+ Add</button>
-            <button class="btn btn-danger" onclick="deleteClass('${cls}')">Delete</button>
-          </div>
-        </div>
-        <div id="cls-rename-${cls}" style="display:none;padding:12px 20px;border-bottom:1px solid var(--border);display:none;">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input id="cls-newname-${cls}" value="${cls}" style="padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:150px;">
-            <button class="btn btn-primary" onclick="renameClass('${cls}')">✓ Rename</button>
-            <button class="btn btn-ghost" onclick="toggleClassRename('${cls}')">Cancel</button>
-          </div>
-        </div>
-        <ul id="sortable-${cls}" style="list-style:none;padding:0;margin:0;">
-          ${students.map((st,idx)=>`<li data-student="${st}" data-cls="${cls}" draggable="true"
-            ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="dropStudent(event)"
-            style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);cursor:grab;transition:background 0.15s;"
-            onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:12px;color:var(--text3);font-family:monospace;min-width:24px;">${idx+1}</span>
-              <div class="avatar av-purple">${initials(st)}</div>
-              <span id="st-name-${cls}-${idx}" style="font-size:13px;">${st}</span>
-            </div>
-            <div style="display:flex;gap:6px;">
-              <button class="btn btn-ghost" style="font-size:11px;padding:3px 10px;" onclick="editStudentName('${cls}',${idx},'${st}')">Edit</button>
-              <button class="btn btn-danger" style="font-size:11px;padding:3px 10px;" onclick="removeStudentFromClass('${cls}','${st}')">Remove</button>
-            </div>
-          </li>`).join('')}
-        </ul>
-      </div>`).join('')}
-  </div>`;
-}
-
-function toggleClassRename(cls) {
-  const el=document.getElementById('cls-rename-'+cls);
-  el.style.display=el.style.display==='none'?'block':'none';
-}
-
-async function renameClass(oldName) {
-  const newName=document.getElementById('cls-newname-'+oldName).value.trim();
-  if(!newName||newName===oldName) return;
-  if(DB.classes[newName]){alert('Class already exists.');return;}
-  DB.classes[newName]=DB.classes[oldName];
-  delete DB.classes[oldName];
-  // Update teachers classes
-  Object.values(DB.users||{}).forEach(u=>{
-    if(u.role==='teacher'&&u.classes){
-      u.classes=u.classes.map(c=>c===oldName?newName:c);
-    }
-    if(u.role==='student'&&u.class===oldName) u.class=newName;
-  });
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-classes');
-}
-
-async function editStudentName(cls,idx,oldName) {
-  const newName=prompt('Edit student name:',oldName);
-  if(!newName||newName===oldName) return;
-  DB.classes[cls][idx]=newName;
-  // Update grades/attendance keys
-  if(GRADES[cls]&&GRADES[cls][oldName]){GRADES[cls][newName]=GRADES[cls][oldName];delete GRADES[cls][oldName];}
-  Object.values(ATTENDANCE[cls]||{}).forEach(day=>{if(day[oldName]!==undefined){day[newName]=day[oldName];delete day[oldName];}});
-  showLoading('Saving...');
-  await Promise.all([saveSchool(),saveGradesDB(),saveAttDB()]);
-  hideLoading();
-  flashSave();
-  showPage('admin-classes');
-}
-
-let _dragSrc=null;
-function dragStart(e) {
-  _dragSrc=e.currentTarget;
-  e.dataTransfer.effectAllowed='move';
-}
-function dragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-}
-async function dropStudent(e) {
-  e.preventDefault();
-  const target=e.currentTarget;
-  if(_dragSrc===target) return;
-  const cls=target.getAttribute('data-cls');
-  const list=document.getElementById('sortable-'+cls);
-  const items=[...list.children];
-  const fromIdx=items.indexOf(_dragSrc);
-  const toIdx=items.indexOf(target);
-  if(fromIdx<0||toIdx<0) return;
-  // Reorder in DOM
-  if(fromIdx<toIdx) list.insertBefore(_dragSrc,target.nextSibling);
-  else list.insertBefore(_dragSrc,target);
-  // Reorder in DB
-  const arr=DB.classes[cls];
-  const [moved]=arr.splice(fromIdx,1);
-  arr.splice(toIdx,0,moved);
-  await saveSchool();
-  flashSave();
-}
-
-async function addClass() {
-  const name=document.getElementById('cls-name').value.trim();
-  if(!name){alert('Class name required.');return;}
-  if(!DB.classes) DB.classes={};
-  if(DB.classes[name]){alert('Class already exists.');return;}
-  DB.classes[name]=[];
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-classes');
-}
-
-async function deleteClass(cls) {
-  if(!confirm(`Delete class ${cls}?`)) return;
-  delete DB.classes[cls];
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-classes');
-}
-
-async function addStudentToClass(cls) {
-  const name=document.getElementById('new-st-'+cls).value.trim();
-  if(!name) return;
-  if(!DB.classes[cls]) DB.classes[cls]=[];
-  if(!DB.classes[cls].includes(name)) DB.classes[cls].push(name);
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-classes');
-}
-
-async function removeStudentFromClass(cls,st) {
-  DB.classes[cls]=DB.classes[cls].filter(s=>s!==st);
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-classes');
-}
-
-// ===================== ADMIN - SCHEDULE =====================
-function buildAdminSchedule() {
-  const days=['Mon','Tue','Wed','Thu','Fri'];
-  const classes=Object.keys(DB.classes||{});
-  return `<div class="page" id="page-admin-schedule">
-    <div class="page-title">Schedule</div>
-    <div class="page-sub">Manage class timetables</div>
-    <div class="select-row">
-      <label>Class:</label>
-      <select id="sched-cls-select" onchange="renderScheduleEditor()">
-        ${classes.map(c=>`<option value="${c}">${c}</option>`).join('')}
-      </select>
-      <label>Day:</label>
-      <select id="sched-day-select" onchange="renderScheduleEditor()">
-        ${days.map(d=>`<option value="${d}">${d}</option>`).join('')}
-      </select>
-    </div>
-    <div id="schedule-editor"></div>
-  </div>`;
-}
-
-function renderScheduleEditor() {
-  const cls=document.getElementById('sched-cls-select')?.value;
-  const day=document.getElementById('sched-day-select')?.value;
-  if(!cls||!day) return;
-  const lessons=(DB.schedule[cls]&&DB.schedule[cls][day])||[];
-  document.getElementById('schedule-editor').innerHTML=`
-    <div class="table-card">
-      <div class="table-header"><h3>${cls} — ${day}</h3><button class="btn btn-primary" onclick="addLesson('${cls}','${day}')">+ Add Lesson</button></div>
-      <table><thead><tr><th>#</th><th>Subject</th><th>Teacher</th><th></th></tr></thead><tbody id="sched-tbody">
-        ${lessons.map((l,i)=>`<tr>
-          <td>${i+1}</td>
-          <td>${l.sub}</td>
-          <td style="color:var(--text2);font-size:12px;">${l.teacher}</td>
-          <td><button class="btn btn-danger" onclick="removeLesson('${cls}','${day}',${i})">Remove</button></td>
-        </tr>`).join('')}
-      </tbody></table>
-      <div style="padding:16px 20px;display:flex;gap:10px;border-top:1px solid var(--border);">
-        <input id="new-sub" style="flex:1;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;" placeholder="Subject name">
-        <input id="new-teacher" style="flex:1;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;" placeholder="Teacher name">
-      </div>
-    </div>`;
-}
-
-async function addLesson(cls,day) {
-  const sub=document.getElementById('new-sub').value.trim();
-  const teacher=document.getElementById('new-teacher').value.trim();
-  if(!sub) return;
-  if(!DB.schedule) DB.schedule={};
-  if(!DB.schedule[cls]) DB.schedule[cls]={};
-  if(!DB.schedule[cls][day]) DB.schedule[cls][day]=[];
-  DB.schedule[cls][day].push({sub,teacher});
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-schedule');
-  setTimeout(()=>{
-    document.getElementById('sched-cls-select').value=cls;
-    document.getElementById('sched-day-select').value=day;
-    renderScheduleEditor();
-  },100);
-}
-
-async function removeLesson(cls,day,idx) {
-  DB.schedule[cls][day].splice(idx,1);
-  showLoading('Saving...');
-  await saveSchool();
-  hideLoading();
-  flashSave();
-  showPage('admin-schedule');
-  setTimeout(()=>{
-    document.getElementById('sched-cls-select').value=cls;
-    document.getElementById('sched-day-select').value=day;
-    renderScheduleEditor();
-  },100);
-}
-
-// ===================== MIGRATE OLD DATA =====================
-async function migrateOldData() {
-  // If DB is empty, populate with existing hardcoded data
-  if (!DB.users || Object.keys(DB.users).length===0) {
-    DB.users = {
-      'irinamargaryan41@gmail.com_t': {pass:'Mirina2006',role:'teacher',name:'Irina Margaryan',subject:'Mathematics & French',classes:['6A','9A','7B','5A']},
-      'arturmargaryann9@gmail.com_t': {pass:'1234',role:'teacher',name:'Artur Margaryan',subject:'History & Digital Literacy and Computer Science',classes:['10A','9A','6A','4B','1A']},
-      'teacher3_t': {pass:'1234',role:'teacher',name:'Vahan Hovhannisyan',subject:'Physics',classes:['10B','11A']},
-      'marina.margarian.6@gmail.com_t': {pass:'mashok8858',role:'teacher',name:'Marina Margaryan',subject:'English',classes:['9A','7B','3A','5B']},
-      'Narine22_t': {pass:'erjankutyun$$',role:'teacher',name:'Narine Margaryan',subject:'Armenian Language',classes:['8B','10A','10B','5A','7A']},
-      'vahanteryan25@gmail.com': {pass:'Burger2',role:'student',name:'Irina Margaryan',class:'12A'},
-      'margaryannarine77@gmail.com': {pass:'1234',role:'student',name:'Artur Margaryan',class:'6A'},
-    };
-    DB.classes = {
-      '7B':['Aram Harutyunyan','Gor Martirosyan','Narek Avetisyan','Tigran Sargsyan','Vahe Petrosyan','Davit Hakobyan','Artur Karapetyan','Suren Mkrtchyan','Alen Grigoryan','Hayk Manukyan','Ani Hovhannisyan','Mariam Sargsyan','Lilit Karapetyan','Nare Grigoryan','Sona Petrosyan','Anahit Martirosyan','Lusine Avetisyan','Elen Harutyunyan','Meline Mkrtchyan','Arpi Sahakyan','Gayane Manukyan','Siranush Hovsepyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Karapetyan'],
-      '5B':['Aram Mkrtchyan','Gor Sargsyan','Narek Petrosyan','Tigran Hovhannisyan','Vahe Avetisyan','Davit Karapetyan','Artur Martirosyan','Suren Grigoryan','Alen Hakobyan','Hayk Sargsyan','Ani Mkrtchyan','Mariam Hovhannisyan','Lilit Avetisyan','Nare Sargsyan','Sona Petrosyan','Anahit Karapetyan','Lusine Grigoryan','Elen Martirosyan','Meline Hovhannisyan','Arpi Sargsyan','Gayane Avetisyan','Siranush Karapetyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Sargsyan'],
-      '6A':['Sona Atoyan','Gevorg Ayvazyan','Araqs Avagyan','Levon Baghdasaryan','Gurgen Gasparyan','Daniel Grigoryan','Hakob Grigoryan','Gayane Yeghiazaryan','Aida Enokyan','Ani Eloyan','Maria Kharazyan','Shantellina Hakobyan','Samvel Hakobyan','Shoghane Habardzumyan','Rafael Hambardzumyan','Mariam Ghazaryan','Hovhannes Malkhasyan','Irina Margaryan','Artur Margaryan','Garik Martirosyan','Areg Melkonyan','Melkon Mkrtumyan','Lili Mkrtchyan','Karine Musheghyan','Sargis Nersisyan','Rima Poghosyan','Angelina Sargsyan','Saro Saghatelyan','Elen Sargsyan','Adrianna Vardanyan','Gagik Kishmishyan'],
-      '9A':['Aram Sargsyan','Irina Margaryan','Narek Mkrtchyan','Tigran Avetisyan','Vahe Karapetyan','Davit Martirosyan','Artur Grigoryan','Suren Hakobyan','Alen Sargsyan','Hayk Hovhannisyan','Ani Mkrtchyan','Mariam Avetisyan','Lilit Karapetyan','Nare Sargsyan','Sona Grigoryan','Anahit Hovhannisyan','Lusine Martirosyan','Elen Sargsyan','Meline Avetisyan','Arpi Karapetyan','Gayane Hovhannisyan','Siranush Sargsyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Avetisyan'],
-      '7A':['Aram Petrosyan','Gor Sargsyan','Narek Hovhannisyan','Tigran Mkrtchyan','Vahe Avetisyan','Davit Karapetyan','Artur Martirosyan','Suren Grigoryan','Alen Hakobyan','Hayk Sargsyan','Ani Mkrtchyan','Mariam Hovhannisyan','Lilit Avetisyan','Nare Sargsyan','Sona Petrosyan','Anahit Karapetyan','Lusine Grigoryan','Elen Martirosyan','Meline Hovhannisyan','Arpi Sargsyan','Gayane Avetisyan','Siranush Karapetyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Sargsyan'],
-      '4B':['Aram Sargsyan','Gor Hovhannisyan','Narek Mkrtchyan','Tigran Avetisyan','Vahe Karapetyan','Davit Martirosyan','Artur Grigoryan','Suren Hakobyan','Alen Sargsyan','Hayk Hovhannisyan','Ani Mkrtchyan','Mariam Avetisyan','Lilit Karapetyan','Nare Sargsyan','Sona Grigoryan','Anahit Hovhannisyan','Lusine Martirosyan','Elen Sargsyan','Meline Avetisyan','Arpi Karapetyan','Gayane Hovhannisyan','Siranush Sargsyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Avetisyan'],
-      '1A':['Aram Sargsyan','Gor Hovhannisyan','Narek Mkrtchyan','Tigran Avetisyan','Vahe Karapetyan','Davit Martirosyan','Artur Grigoryan','Suren Hakobyan','Alen Sargsyan','Hayk Hovhannisyan','Ani Mkrtchyan','Mariam Avetisyan','Lilit Karapetyan','Nare Sargsyan','Sona Grigoryan','Anahit Hovhannisyan','Lusine Martirosyan','Elen Sargsyan','Meline Avetisyan','Arpi Karapetyan','Gayane Hovhannisyan','Siranush Sargsyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Avetisyan'],
-      '12A':['Aram Sargsyan','Gor Hovhannisyan','Narek Mkrtchyan','Tigran Avetisyan','Vahe Karapetyan','Davit Martirosyan','Artur Grigoryan','Suren Hakobyan','Alen Sargsyan','Hayk Hovhannisyan','Ani Mkrtchyan','Mariam Avetisyan','Lilit Karapetyan','Nare Sargsyan','Sona Grigoryan','Anahit Hovhannisyan','Lusine Martirosyan','Elen Sargsyan','Meline Avetisyan','Arpi Karapetyan','Gayane Hovhannisyan','Siranush Sargsyan','Tatevik Grigoryan','Anna Hakobyan','Zaruhi Avetisyan'],
-      '10A':['Ani Hakobyan','Aram Petrosyan','Mari Sargsyan','Vahe Ghazaryan','Naira Hovhannisyan','Gor Avetisyan','Silva Mkrtchyan','Davit Manukyan'],
-      '10B':['Lilit Grigoryan','Arman Avagyan','Nare Simonyan','Tigran Karapetyan','Lusine Danielyan'],
-      '11A':['Karen Mikaelyan','Diana Ohanyan','Levon Stepanyan'],
-    };
-    DB.schedule = {
-      '6A':{
-        'Mon':[{sub:'English',teacher:'Marina Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Nature',teacher:'Nare Harutyunyan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'History',teacher:'Artur Margaryan'},{sub:'Russian Language',teacher:'Lusine Vardanyan'}],
-        'Tue':[{sub:'Physical Education',teacher:'Aram Ghazaryan'},{sub:'Music',teacher:'Vahan Hovhannisyan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'English',teacher:'Marina Margaryan'}],
-        'Wed':[{sub:'Handcraft',teacher:'Mariam Petrosyan'},{sub:'History',teacher:'Artur Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Physical Education',teacher:'Anna Sargsyan'},{sub:'Russian Language',teacher:'Vahan Hovhannisyan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Art',teacher:'Armen Mkrtchyan'}],
-        'Thu':[{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Nature',teacher:'Anna Sargsyan'},{sub:'Handcraft',teacher:'Lusine Vardanyan'},{sub:'Russian Language',teacher:'Karine Avagyan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Mathematics',teacher:'Irina Margaryan'}],
-        'Fri':[{sub:'Physical Education',teacher:'Nare Harutyunyan'},{sub:'Digital Literacy and Computer Science',teacher:'Artur Margaryan'},{sub:'History',teacher:'Artur Margaryan'},{sub:'English',teacher:'Marina Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Mathematics',teacher:'Irina Margaryan'}],
-      },
-      '10A':{
-        'Mon':[{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Physics',teacher:'Vahan Hovhannisyan'},{sub:'History',teacher:'Artur Margaryan'},{sub:'Biology',teacher:'Nare Harutyunyan'},{sub:'English',teacher:'Marina Margaryan'},{sub:'Physical Education',teacher:'Armen Mkrtchyan'}],
-        'Tue':[{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Chemistry',teacher:'Karine Avagyan'},{sub:'Geography',teacher:'Hovhannes Grigoryan'},{sub:'Physics',teacher:'Vahan Hovhannisyan'},{sub:'History',teacher:'Artur Margaryan'},{sub:'Art',teacher:'Ani Muradyan'}],
-        'Wed':[{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Physics',teacher:'Vahan Hovhannisyan'},{sub:'Biology',teacher:'Nare Harutyunyan'},{sub:'English',teacher:'Marina Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Chemistry',teacher:'Karine Avagyan'},{sub:'Music',teacher:'Varduhi Stepanyan'}],
-        'Thu':[{sub:'History',teacher:'Artur Margaryan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'Geography',teacher:'Hovhannes Grigoryan'},{sub:'English',teacher:'Marina Margaryan'},{sub:'Biology',teacher:'Nare Harutyunyan'},{sub:'Physics',teacher:'Vahan Hovhannisyan'}],
-        'Fri':[{sub:'Armenian Language',teacher:'Narine Margaryan'},{sub:'History',teacher:'Artur Margaryan'},{sub:'Mathematics',teacher:'Irina Margaryan'},{sub:'Chemistry',teacher:'Karine Avagyan'},{sub:'Geography',teacher:'Hovhannes Grigoryan'},{sub:'English',teacher:'Marina Margaryan'},{sub:'Physical Education',teacher:'Armen Mkrtchyan'}],
-      },
-    };
-    showLoading('First time setup — saving data...');
-    await saveSchool();
-    hideLoading();
+function updateMyTicketsBadge() {
+  const tickets = loadMyTickets();
+  const cnt = document.getElementById('myTicketsCount');
+  if (tickets.length > 0) {
+    cnt.style.display = 'inline';
+    cnt.textContent = tickets.length;
+  } else {
+    cnt.style.display = 'none';
   }
 }
 
-// ===================== INIT =====================
-(async()=>{
-  await loadAll();
-  await migrateOldData();
-  await loadAll();
+function renderMyTickets() {
+  const tickets = loadMyTickets();
+  const el = document.getElementById('myTicketsContent');
+  if (tickets.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-state-icon">🎟️</span>
+        <div class="empty-state-text">Դեռ տոմս չունեք</div>
+        <br>
+        <button class="buy-btn" onclick="showPage('home')" style="margin-top:16px">Ընտրել Տոմս →</button>
+      </div>`;
+    return;
+  }
+  el.innerHTML = tickets.map((t, i) => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px;position:relative">
+      <div style="height:4px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent2))"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:24px;padding:24px;align-items:start">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <span style="font-size:32px">${t.emoji || '🎟️'}</span>
+            <div>
+              <div style="font-family:'Noto Serif Armenian',serif;font-size:18px;font-weight:700">${t.eventName}</div>
+              <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t.category}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px">
+              <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Ամսաթիվ</div>
+              <div style="font-size:13px">${t.date} · ${t.time}</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px">
+              <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Վայր</div>
+              <div style="font-size:12px">${t.venue}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+            ${t.seats.map(s => `<span class="seat-chip">${s}</span>`).join('')}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:11px;color:var(--text-dim)">👤 ${t.buyer} · <span style="color:var(--accent);font-weight:700">${t.amount}</span></div>
+            <div style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace">${t.orderId}</div>
+          </div>
+        </div>
+        <div style="text-align:center;flex-shrink:0">
+          <div style="background:#fff;border-radius:10px;padding:12px;display:inline-block;margin-bottom:8px">
+            ${generateQRSvg(t.orderId)}
+          </div>
+          <div style="font-size:10px;color:var(--text-dim);letter-spacing:1.5px">QR ԿՈԴ</div>
+        </div>
+      </div>
+      <div style="border-top:1px dashed var(--border);padding:12px 24px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:var(--text-dim)">Գնված՝ ${t.issuedAt}</div>
+        <button class="remove-btn" onclick="deleteMyTicket(${i})" style="font-size:11px">🗑 Ջնջել</button>
+      </div>
+    </div>
+  `).join('');
+  setTimeout(renderAllQRCodes, 50);
+}
+
+function deleteMyTicket(index) {
+  const tickets = loadMyTickets();
+  tickets.splice(index, 1);
+  saveMyTickets(tickets);
+  updateMyTicketsBadge();
+  renderMyTickets();
+}
+
+// =====================
+// EVENTS CRUD (Admin)
+// =====================
+const COLORS = ['#e8c547','#6bc5ff','#ff6b6b','#c084fc','#fb923c','#4ade80','#f472b6','#38bdf8'];
+
+async function saveEvents() {
+  const db = _dbCache || await dbRead();
+  db.events = events;
+  await dbWrite(db);
+}
+
+async function loadSavedEvents() {
+  const db = await dbRead();
+  if (db.events && db.events.length > 0) {
+    events.length = 0;
+    db.events.forEach(e => events.push(e));
+  }
+}
+
+
+function renderAdminEvents() {
+  const list = document.getElementById('adminEventsList');
+  const count = document.getElementById('eventsAdminCount');
+  if (count) count.textContent = '— ' + events.length + ' հատ';
+
+  list.innerHTML = events.map((e, i) => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;display:flex;gap:16px;align-items:center">
+      <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,${e.color}25,${e.color}08);border:1px solid ${e.color}30;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">${e.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Noto Serif Armenian',serif;font-size:15px;font-weight:700;margin-bottom:4px">${e.name}</div>
+        <div style="font-size:12px;color:var(--text-dim);display:flex;flex-wrap:wrap;gap:10px">
+          <span>📅 ${e.date} · ${e.time}</span>
+          <span>📍 ${e.venue}</span>
+          <span style="color:var(--accent)">${e.price.toLocaleString()}֏${e.vipPrice ? ' · VIP ' + e.vipPrice.toLocaleString() + '֏' : ''}</span>
+          ${e.badge ? `<span style="background:rgba(255,107,107,0.15);color:#ff6b6b;padding:1px 8px;border-radius:100px;font-size:10px">${e.badge}</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button class="nav-btn" onclick="startEditEvent(${e.id})" style="font-size:12px;padding:7px 14px">✏️ Խmb.</button>
+        <button class="remove-btn" onclick="deleteEvent(${e.id})" style="font-size:12px;padding:7px 14px">🗑 Jnjel</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function startAddEvent() {
+  document.getElementById('editEventId').value = '';
+  document.getElementById('eventFormTitle').textContent = '➕ Նոր Иradаržutyun';
+  document.getElementById('ef_name').value = '';
+  document.getElementById('ef_category').value = 'Hamerg';
+  document.getElementById('ef_date').value = '';
+  document.getElementById('ef_time').value = '';
+  document.getElementById('ef_venue').value = '';
+  document.getElementById('ef_price').value = '';
+  document.getElementById('ef_vipPrice').value = '';
+  document.getElementById('ef_emoji').value = '';
+  document.getElementById('ef_badge').value = '';
+  document.getElementById('ef_desc').value = '';
+  document.getElementById('eventFormSection').style.display = 'block';
+  document.getElementById('eventFormSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function startEditEvent(id) {
+  const e = events.find(ev => ev.id === id);
+  if (!e) return;
+  document.getElementById('editEventId').value = id;
+  document.getElementById('eventFormTitle').textContent = '✏️ Խmbagrел · ' + e.name;
+  document.getElementById('ef_name').value = e.name;
+  document.getElementById('ef_category').value = e.category;
+  document.getElementById('ef_date').value = e.date;
+  document.getElementById('ef_time').value = e.time;
+  document.getElementById('ef_venue').value = e.venue;
+  document.getElementById('ef_price').value = e.price;
+  document.getElementById('ef_vipPrice').value = e.vipPrice || '';
+  document.getElementById('ef_emoji').value = e.emoji || '';
+  document.getElementById('ef_badge').value = e.badge || '';
+  document.getElementById('ef_desc').value = e.description || '';
+  document.getElementById('eventFormSection').style.display = 'block';
+  document.getElementById('eventFormSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEditEvent() {
+  document.getElementById('eventFormSection').style.display = 'none';
+}
+
+async function saveEvent() {
+  const name = document.getElementById('ef_name').value.trim();
+  const date = document.getElementById('ef_date').value.trim();
+  const time = document.getElementById('ef_time').value.trim();
+  const venue = document.getElementById('ef_venue').value.trim();
+  const price = parseInt(document.getElementById('ef_price').value) || 0;
+  if (!name || !date || !venue || !price) {
+    showToast('⚠️', 'Лrtatsrek bardasir dashtere (*)');
+    return;
+  }
+  const editId = document.getElementById('editEventId').value;
+  const vipPrice = parseInt(document.getElementById('ef_vipPrice').value) || price * 2;
+  const emoji = document.getElementById('ef_emoji').value.trim() || '🎟️';
+  const badge = document.getElementById('ef_badge').value.trim() || null;
+  const category = document.getElementById('ef_category').value;
+  const description = document.getElementById('ef_desc').value.trim();
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+  if (editId) {
+    // Edit
+    const idx = events.findIndex(e => e.id === parseInt(editId));
+    if (idx !== -1) {
+      events[idx] = { ...events[idx], name, category, date, time, venue, price, vipPrice, emoji, badge, description };
+    }
+    await saveEvents();
+    renderEvents(events);
+    showToast('✓', 'Պahpanvel e');
+  } else {
+    // Add new
+    const newId = Math.max(...events.map(e => e.id), 0) + 1;
+    events.push({ id: newId, name, category, date, time, venue, price, vipPrice, emoji, badge, description, color, available: 80, total: 80 });
+    await saveEvents();
+    renderEvents(events);
+    showToast('✓', '"' + name + '" aveleatsvel e');
+  }
+  cancelEditEvent();
+  renderAdminEvents();
+}
+
+async function deleteEvent(id) {
+  const e = events.find(ev => ev.id === id);
+  if (!e) return;
+  if (!confirm('Vajit e? "' + e.name + '" khnjvi bolor kataragnerov')) return;
+  const idx = events.findIndex(ev => ev.id === id);
+  events.splice(idx, 1);
+  await saveEvents();
+  renderAdminEvents();
+  renderEvents(events);
+  showToast('🗑', '"' + e.name + '" xnvats e');
+}
+
+async function debugShowAllTickets() {
+  const db = await dbRead();
+  const reg = db.tickets || {};
+  const keys = Object.keys(reg);
+  const resultEl = document.getElementById('scanResult');
+  resultEl.style.display = 'block';
+  if (keys.length === 0) {
+    resultEl.innerHTML = `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;color:var(--text-dim);text-align:center">Դեռ ոչ մի տոմս չի գնվել — registry-ը դատark e</div>`;
+    return;
+  }
+  resultEl.innerHTML = `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--accent)">📋 Registry-ում ${keys.length} տomser kan</div>
+      ${keys.map(k => {
+        const t = reg[k];
+        return `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span style="font-family:monospace;color:var(--accent);cursor:pointer" onclick="document.getElementById('scanInput').value='${k}'">${k}</span>
+          · ${t.eventName} · ${t.buyer}
+          ${t.usedAt ? `<span style="color:#fb923c"> · ✓ Ogtagortsvats ${t.usedAt}</span>` : '<span style="color:var(--success)"> · Avazer</span>'}
+        </div>`;
+      }).join('')}
+      <div style="font-size:11px;color:var(--text-dim);margin-top:10px">Кlik kody vra — автоматик կмутqаgrevi</div>
+    </div>`;
+}
+
+// =====================
+// INIT
+// =====================
+// Load everything from JSONBin on startup
+(async () => {
+  await loadSavedEvents();
+  renderEvents(events);
+  updateMyTicketsBadge();
+  console.log('JSONBin loaded');
 })();
+</script>
+<script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+// =====================
+// QR CAMERA SCANNER
+// =====================
+let cameraStream = null;
+let scanLoop = null;
+let scannedTickets = [];
+let usedTickets = new Set();
+
+async function startCamera() {
+  const errEl = document.getElementById('cameraError');
+  errEl.style.display = 'none';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
+    cameraStream = stream;
+    const video = document.getElementById('qrVideo');
+    video.srcObject = stream;
+    await video.play();
+    document.getElementById('cameraArea').style.display = 'block';
+    document.getElementById('cameraStart').style.display = 'none';
+    startScanLoop();
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = '⚠️ Կամerayan hasanelutyun chka: ' + (e.message || 'Xndrum enq tuylatrel kamerayi ogtagortsumы');
+  }
+}
+
+function stopCamera() {
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  if (scanLoop) { clearInterval(scanLoop); scanLoop = null; }
+  document.getElementById('cameraArea').style.display = 'none';
+  document.getElementById('cameraStart').style.display = 'block';
+}
+
+function startScanLoop() {
+  const video = document.getElementById('qrVideo');
+  const canvas = document.getElementById('qrCanvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const statusEl = document.getElementById('scanStatus');
+  let lastScanned = '', lastTime = 0;
+
+  scanLoop = setInterval(() => {
+    if (!video || video.readyState < 2 || video.paused) return;
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+    if (!w || !h) return;
+
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(video, 0, 0, w, h);
+
+    if (typeof jsQR === 'undefined') return;
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const code = jsQR(imgData.data, w, h, { inversionAttempts: 'attemptBoth' });
+
+    if (code && code.data) {
+      const now = Date.now();
+      if (code.data !== lastScanned || now - lastTime > 3000) {
+        lastScanned = code.data;
+        lastTime = now;
+        if (statusEl) statusEl.textContent = '✅ QR hайтniapvets! Ступum em...';
+        scanTicket(code.data);
+      }
+    } else {
+      if (statusEl) statusEl.textContent = '🔍 Pos QR-ы frame-ի мej...';
+    }
+  }, 200);
+}
+
+function renderScannedList() {
+  const el = document.getElementById('scannedList');
+  if (scannedTickets.length === 0) {
+    el.innerHTML = `<div class="empty-state" style="padding:30px"><span class="empty-state-icon" style="font-size:36px">📭</span><div class="empty-state-text" style="font-size:14px">Դեռ ոչ մի տոմս չի ստուգվել</div></div>`;
+    return;
+  }
+  const colors = { valid: 'var(--success)', invalid: 'var(--accent2)', used: 'var(--accent)' };
+  const icons = { valid: '✅', invalid: '❌', used: '⚠️' };
+  const labels = { valid: 'Վավեր', invalid: 'Անվավեր', used: 'Կրկնական' };
+  el.innerHTML = scannedTickets.slice(0,20).map(s => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:20px">${icons[s.status]}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-family:'Noto Serif Armenian',serif;font-weight:600">${s.event}</div>
+        <div style="font-size:11px;color:var(--text-dim)">${s.id} · ${s.buyer}</div>
+      </div>
+      <span style="font-size:11px;font-weight:700;color:${colors[s.status]}">${labels[s.status]}</span>
+    </div>
+  `).join('');
+}
+
+function clearScanned() {
+  scannedTickets = []; usedTickets = new Set();
+  renderScannedList();
+  document.getElementById('scanResult').style.display = 'none';
+}
+
+function playBeep(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = type === 'success' ? 880 : type === 'error' ? 220 : 550;
+    gain.gain.value = 0.3;
+    osc.start(); osc.stop(ctx.currentTime + 0.18);
+  } catch(e) {}
+}
 </script>
 </body>
 </html>
