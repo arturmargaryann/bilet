@@ -1701,7 +1701,7 @@ async function scanTicket(rawInput) {
   if (!raw) return;
 
   resultEl.style.display = 'block';
-  resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">⏳ Ստուգվում է ․․․</div>';
+  resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">⏳ Ступում ем...</div>';
 
   // Extract TK-XXXXXX from QR data
   const match = raw.match(/TK-\d{6}/);
@@ -1981,10 +1981,17 @@ function updatePriceBreakdown(total, count) {
 // =====================
 // EVENT DETAIL
 // =====================
-function openEvent(id) {
+async function openEvent(id) {
   currentEvent = events.find(e => e.id === id);
   selectedSeats = [];
   const e = currentEvent;
+  // Reload sold seats from JSONBin so hall is always fresh
+  const db = await dbRead();
+  if (db.soldSeats) {
+    Object.keys(db.soldSeats).forEach(eid => {
+      soldSeatsByEvent[eid] = new Set(db.soldSeats[eid]);
+    });
+  }
 
   document.getElementById('detailContainer').innerHTML = `
     <div>
@@ -2163,12 +2170,20 @@ function showQRModal(fn, ln) {
   const content = document.getElementById('qrModalContent');
   const firstItem = cart[0];
 
-  // Mark seats as sold
+  // Mark seats as sold + save to JSONBin
   cart.forEach(item => {
     const eid = item.event.id;
     if (!soldSeatsByEvent[eid]) soldSeatsByEvent[eid] = new Set();
     item.seats.forEach(s => soldSeatsByEvent[eid].add(s.id));
   });
+  // Persist sold seats to JSONBin
+  const dbForSeats = _dbCache || { tickets: {}, orders: [], events: [] };
+  const soldObj = {};
+  Object.keys(soldSeatsByEvent).forEach(eid => {
+    soldObj[eid] = Array.from(soldSeatsByEvent[eid]);
+  });
+  dbForSeats.soldSeats = soldObj;
+  dbWrite(dbForSeats);
 
   // Store ticket for verification
   // Save to JSONBin so any device can verify
@@ -2393,6 +2408,12 @@ async function loadSavedEvents() {
   if (db.events && db.events.length > 0) {
     events.length = 0;
     db.events.forEach(e => events.push(e));
+  }
+  // Load sold seats
+  if (db.soldSeats) {
+    Object.keys(db.soldSeats).forEach(eid => {
+      soldSeatsByEvent[eid] = new Set(db.soldSeats[eid]);
+    });
   }
 }
 
