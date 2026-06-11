@@ -276,13 +276,13 @@ h1 span { color: var(--accent); }
 <body>
 
 <header>
-  <a class="logo" href="#" onclick="showPage('home');return false">TI<span>CKET</span></a>
+  <a class="logo" href="#" onclick="showPage('home');return false">ԲԻ<span>ԼԵԹ</span></a>
   <nav>
-    <button class="nav-btn active" id="nav-home" onclick="showPage('home')">Գլxavор</button>
+    <button class="nav-btn active" id="nav-home" onclick="showPage('home')">Main</button>
     <button class="nav-btn" id="nav-mytickets" onclick="showPage('mytickets')">
-      Իм Тomser
+      My tickets
       <span id="myTicketsCount" style="display:none;background:var(--accent);color:#fff;font-size:10px;font-weight:800;border-radius:100px;padding:1px 7px;margin-left:4px"></span>
-    </button>
+    </button>m
     <button class="nav-btn" id="nav-admin" onclick="promptAdmin()">Admin</button>
     <button class="cart-btn" onclick="showPage('cart')">
       🛒 Cart
@@ -294,7 +294,7 @@ h1 span { color: var(--accent); }
 <!-- HOME -->
 <div class="page active" id="page-home">
   <div class="hero">
-    <div class="hero-eyebrow">🎟 Yerevan · 2025</div>
+    <div class="hero-eyebrow">🎟 Yerevan · 2026</div>
     <h1>All <span>Events</span></h1>
     <p class="hero-sub">Concerts, cinema, theatre — book your ticket in seconds</p>
     <div class="search-bar">
@@ -323,7 +323,7 @@ h1 span { color: var(--accent); }
 <!-- CART -->
 <div class="page" id="page-cart">
   <div class="page-wrap">
-    <h2 class="page-h">🛒 Иm Carty</h2>
+    <h2 class="page-h">🛒 My cart</h2>
     <div id="cartContent"></div>
   </div>
 </div>
@@ -354,7 +354,7 @@ h1 span { color: var(--accent); }
             <div class="pay-method" onclick="selectPay(this)"><span class="pay-icon">🏦</span><div class="pay-label">Bank</div></div>
             <div class="pay-method" onclick="selectPay(this)"><span class="pay-icon">💵</span><div class="pay-label">Cash</div></div>
           </div>
-          <div class="form-row full"><div class="form-group"><label class="form-label">Cardi Hamer</label><input class="form-input" placeholder="1234 5678 9012 3456" oninput="fmtCard(this)" maxlength="19"></div></div>
+          <div class="form-row full"><div class="form-group"><label class="form-label">Card Numbers</label><input class="form-input" placeholder="1234 5678 9012 3456" oninput="fmtCard(this)" maxlength="19"></div></div>
           <div class="form-row">
             <div class="form-group"><label class="form-label">Expiry</label><input class="form-input" placeholder="MM/YY" maxlength="5"></div>
             <div class="form-group"><label class="form-label">CVV</label><input class="form-input" placeholder="123" maxlength="3" type="password"></div>
@@ -836,7 +836,7 @@ function addToCart() {
 function renderCart() {
   const el = document.getElementById('cartContent');
   if (!cart.length) {
-    el.innerHTML = `<div class="empty-state"><span class="empty-icon">🛒</span><div>Carty dataрk e</div><br><button class="buy-btn" onclick="showPage('home')" style="margin-top:16px">Browse Events →</button></div>`;
+    el.innerHTML = `<div class="empty-state"><span class="empty-icon">🛒</span><div>The cart is empty.</div><br><button class="buy-btn" onclick="showPage('home')" style="margin-top:16px">Browse Events →</button></div>`;
     return;
   }
   const totalAll = cart.reduce((s,i) => s+i.total, 0);
